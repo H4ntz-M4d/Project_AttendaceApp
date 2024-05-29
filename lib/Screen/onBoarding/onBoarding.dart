@@ -1,8 +1,8 @@
 // ignore_for_file: camel_case_types
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:login_ui/user/authentication/login_layout.dart';
-import 'package:login_ui/Screen/onBoarding/pageIndicator.dart';
+import 'package:project_attendance_app/user/authentication/login_layout.dart';
+import 'package:project_attendance_app/Screen/onBoarding/pageIndicator.dart';
 
 class onBoarding extends StatefulWidget {
   const onBoarding({super.key});
