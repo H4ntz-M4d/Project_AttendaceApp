@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:login_ui/user/model/user.dart';
+import 'package:project_attendance_app/user/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RememberUserPrefs {

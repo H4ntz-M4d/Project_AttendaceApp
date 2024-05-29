@@ -3,12 +3,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:login_ui/user/fragments/dashboard.dart';
-import 'package:login_ui/user/model/user.dart';
-import 'package:login_ui/api_connection/api_connection.dart';
+import 'package:project_attendance_app/user/fragments/dashboard.dart';
+import 'package:project_attendance_app/user/model/user.dart';
+import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:login_ui/user/userPreferences/user_preferences.dart';
+import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
