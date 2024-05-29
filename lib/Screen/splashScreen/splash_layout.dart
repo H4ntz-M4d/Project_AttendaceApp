@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
     _timer?.cancel(); // Cancel the timer if the widget is disposed
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -107,14 +107,36 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           Positioned(
-            top: 190,
+            top: 250,
             left: 0,
             right: 0,
             child: Center(
               child: Image.asset(
-                'images/3Logos.png',
-                width: 500,
-                height: 500,
+                'images/LogoSplash.png',
+              ),
+            ),
+          ),
+          Positioned(
+            top: 750,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Image.asset(
+                'images/Kolaborasi.png',
+              ),
+            ),
+          ),
+          const Positioned(
+            top: 690,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                'Kolaborasi :',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
               ),
             ),
           ),
