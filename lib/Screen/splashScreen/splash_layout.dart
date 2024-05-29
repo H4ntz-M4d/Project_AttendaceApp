@@ -13,22 +13,32 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
-    Timer(
+    _timer = Timer(
       const Duration(seconds: 3),
       () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const onBoarding(),
-          ),
-        );
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const onBoarding(),
+            ),
+          );
+        }
       },
     );
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer if the widget is disposed
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
