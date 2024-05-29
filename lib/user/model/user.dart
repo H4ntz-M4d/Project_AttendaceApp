@@ -1,20 +1,17 @@
 class Siswa {
-  final String nis;
-  final String siswaPassword;
+  String nis;
+  String siswaPassword;
 
-  Siswa({
-    required this.nis,
-    required this.siswaPassword,
-  });
+  Siswa(
+    this.nis,
+    this.siswaPassword,
+  );
 
-  factory Siswa.fromJson(Map<String, dynamic> json) {
-    return Siswa(
-      nis: json['nis'],
-      siswaPassword: json['siswa_password'],
-    );
-  }
+  factory Siswa.fromJson(Map<String, dynamic> json) => Siswa(
+        json['nis'],
+        json['siswa_password'],
+      );
 
-  Map<String, dynamic> toJson() {
-    return {'nis': nis, 'siswa_password': siswaPassword};
-  }
+  Map<String, dynamic> toJson() =>
+      {'nis': nis, 'siswa_password': siswaPassword};
 }

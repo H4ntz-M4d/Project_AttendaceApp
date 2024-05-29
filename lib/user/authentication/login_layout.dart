@@ -54,7 +54,7 @@ class _LoginPage extends State<LoginPage> {
 
           Siswa userInfo = Siswa.fromJson(resBodyOfLogin["userData"]);
 
-          await RememberUserPrefs.saveRememberUser(userInfo);
+          await RememberUserPrefs.storeUserInfo(userInfo);
 
           Future.delayed(const Duration(milliseconds: 2000), () {
             Get.to(() => DashboardSiswa());

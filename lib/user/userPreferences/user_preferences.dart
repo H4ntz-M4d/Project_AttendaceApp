@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class RememberUserPrefs {
   //save user info
-  static Future<void> saveRememberUser(Siswa userInfo) async {
+  static Future<void> storeUserInfo(Siswa userInfo) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String userJsonData = jsonEncode(userInfo.toJson());
     await preferences.setString("currentUser", userJsonData);
