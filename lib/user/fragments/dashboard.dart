@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_attendance_app/user/fragments/profile_screen.dart';
 import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 
 class DashboardSiswa extends StatelessWidget {
@@ -14,9 +15,20 @@ class DashboardSiswa extends StatelessWidget {
       },
       builder: (controller) {
         return Scaffold(
-            appBar: AppBar(
-          title: Text("Dashboard"),
-        ));
+          appBar: AppBar(
+            title: Text("Dashboard"),
+          ),
+          body: Center(
+            child: IconButton(
+              icon: const Icon(Icons.people),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => ProfileScreen()
+                )
+              );
+              },
+            ),
+          ),
+        );
       },
     );
   }
