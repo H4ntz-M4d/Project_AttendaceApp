@@ -57,7 +57,7 @@ class _LoginPage extends State<LoginPage> {
           await RememberUserPrefs.storeUserInfo(userInfo);
 
           Future.delayed(const Duration(milliseconds: 2000), () {
-            Get.to(() => DashboardSiswa());
+            Get.offAll(() => DashboardSiswa());
           });
         } else {
           Fluttertoast.showToast(msg: "Maaf tidak dapat Login, Coba Lagi.");
