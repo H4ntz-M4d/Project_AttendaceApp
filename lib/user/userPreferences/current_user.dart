@@ -6,7 +6,7 @@ import "package:project_attendance_app/user/userPreferences/user_preferences.dar
 import 'package:http/http.dart' as http;
 
 class CurrentUser extends GetxController {
-  Rx<Siswa> _currentUser = Siswa('', '', '', '', '', '').obs;
+  Rx<Siswa> _currentUser = Siswa('', '', '', '', '', '', '').obs;
 
   Siswa get user => _currentUser.value;
 
