@@ -18,7 +18,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      home: SplashScreen(),
+      home: FutureBuilder(
+        future: RememberUserPrefs.readUserInfo(),
+        builder: (context, dataSnapshot) {
+          if (dataSnapshot.data == null) {
+            return const SplashScreen();
+          } else {
+            return DashboardSiswa();
+          }
+        },
+      ),
     );
   }
 }

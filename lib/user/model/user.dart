@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:ffi';
+
 class Siswa {
   final String nis;
   final String nama;

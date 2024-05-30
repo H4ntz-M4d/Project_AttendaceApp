@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,13 +11,12 @@ class RememberUserPrefs {
   }
 
   static Future<Siswa?> readUserInfo() async {
-    Siswa? currentUserInfo;
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? userInfo = preferences.getString("currentUser");
     if (userInfo != null) {
       Map<String, dynamic> userDataMap = jsonDecode(userInfo);
-      currentUserInfo = Siswa.fromJson(userDataMap);
+      return Siswa.fromJson(userDataMap);
     }
-    return currentUserInfo;
+    return null;
   }
 }

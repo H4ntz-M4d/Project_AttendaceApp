@@ -1,42 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:project_attendance_app/user/model/absensi_siswa.dart';
-import 'package:project_attendance_app/user/userPreferences/present_preference.dart';
+import 'package:get/get.dart';
+import 'package:project_attendance_app/user/fragments/profile_screen.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 
 class DashboardSiswa extends StatelessWidget {
-  Future<List<AbsensiSiswa>> getUser() async {
-    return await RememberPresentPrefs.getRememberAbsensi();
+  final CurrentUser _rememberCurrentUser = Get.put(CurrentUser());
+
+  Future<bool> _onWillPop(BuildContext context) async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Konfirmasi'),
+            content: Text('Apakah Anda ingin meninggalkan aplikasi?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Tidak'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Iya'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Dashboard Siswa'),
-      ),
-      body: FutureBuilder<List<AbsensiSiswa>>(
-        future: getUser(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
-          } else {
-            List<AbsensiSiswa> absensi = snapshot.data!;
-            return ListView.builder(
-              itemCount: absensi.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title:
-                      Text('Kode Keterangan: ${absensi[index].kodeKeterangan}'),
-                  subtitle: Text('NIS: ${absensi[index].nis}'),
-                );
-              },
-            );
-          }
-        },
-      ),
+    return GetBuilder(
+      init: CurrentUser(),
+      initState: (CurrentUser) {
+        _rememberCurrentUser.getUserInfo();
+      },
+      builder: (controller) {
+        return WillPopScope(
+          onWillPop: () => _onWillPop(context),
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text("Dashboard"),
+            ),
+            body: Center(
+              child: IconButton(
+                icon: const Icon(Icons.people),
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (ctx) => ProfileScreen()));
+                },
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

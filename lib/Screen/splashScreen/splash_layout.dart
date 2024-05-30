@@ -14,20 +14,30 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
-    Timer(
+    _timer = Timer(
       const Duration(seconds: 3),
       () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const onBoarding(),
-          ),
-        );
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const onBoarding(),
+            ),
+          );
+        }
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer if the widget is disposed
+    super.dispose();
   }
 
   @override
@@ -98,14 +108,36 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           Positioned(
-            top: 190,
+            top: 250,
             left: 0,
             right: 0,
             child: Center(
               child: Image.asset(
-                'images/3Logos.png',
-                width: 500,
-                height: 500,
+                'images/LogoSplash.png',
+              ),
+            ),
+          ),
+          Positioned(
+            top: 750,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Image.asset(
+                'images/Kolaborasi.png',
+              ),
+            ),
+          ),
+          const Positioned(
+            top: 690,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                'Kolaborasi :',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
               ),
             ),
           ),
