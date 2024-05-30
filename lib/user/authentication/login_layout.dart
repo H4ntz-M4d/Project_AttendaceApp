@@ -8,7 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/user/authentication/history_page.dart';
-import 'package:project_attendance_app/user/fragments/dashboard.dart';
 import 'package:project_attendance_app/user/model/absensi_siswa.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/user/userPreferences/present_preference.dart';
