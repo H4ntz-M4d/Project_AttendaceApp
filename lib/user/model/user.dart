@@ -9,10 +9,16 @@ class Siswa {
   String alamat;
   String phone;
 
-  Siswa(this.nis, this.siswaPassword, this.nama, this.ttl, this.alamat, this.phone);
+  Siswa(this.nis, this.siswaPassword, this.nama, this.ttl, this.alamat,
+      this.phone);
 
-  factory Siswa.fromJson(Map<String, dynamic> json) => Siswa(json['nis'],
-      json['siswa_password'], json['nama'], json['tgl_lahir'], json['alamat'], json['phone']);
+  factory Siswa.fromJson(Map<String, dynamic> json) => Siswa(
+      json['nis'],
+      json['siswa_password'],
+      json['nama'],
+      json['tgl_lahir'],
+      json['alamat'],
+      json['phone']);
 
   Map<String, dynamic> toJson() => {
         'nis': nis,

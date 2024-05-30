@@ -41,7 +41,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Stack(
         children: [
@@ -67,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
                       child: Container(
-                        width: screenWidth,
+                        width: 400,
                         height: 400,
                         color: Colors.transparent,
                       ),
@@ -96,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
                       child: Container(
-                        width: screenWidth,
+                        width: 400,
                         height: 400,
                         color: Colors.transparent,
                       ),
@@ -117,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           Positioned(
-            top: 750,
+            bottom: 40,
             left: 0,
             right: 0,
             child: Center(
@@ -127,7 +126,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           const Positioned(
-            top: 690,
+            bottom: 130,
             left: 0,
             right: 0,
             child: Center(
