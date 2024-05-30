@@ -2,8 +2,9 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:login_ui/Screen/onBoarding/onBoarding.dart';
 import 'dart:ui';
+
+import 'package:project_attendance_app/Screen/onBoarding/onBoarding.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

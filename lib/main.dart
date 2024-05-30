@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:login_ui/Screen/splashScreen/splash_layout.dart';
+import 'package:project_attendance_app/Screen/splashScreen/splash_layout.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

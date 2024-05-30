@@ -39,6 +39,10 @@ dependencies:
   fluttertoast: ^8.2.5
   http: ^1.2.1
   shared_preferences: ^2.2.3
+  sidebarx: ^0.17.1
+  styled_widget: ^0.4.1
+  bloc: ^8.1.4
+  flutter_bloc: ^8.1.5
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +60,14 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - images/Ellipse2.png
+    - images/Siswas.png
+    - images/3Logos.png
+    - images/AbsensiElement.png
+    - images/polinema.png
+    - images/Siswa.png
+    - images/3Logo.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
