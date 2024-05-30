@@ -2,16 +2,17 @@ import 'dart:convert';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:project_attendance_app/user/userPreferences/edit_Photo.dart';
-import 'package:project_attendance_app/user/userPreferences/edit_screen.dart';
+import 'package:project_attendance_app/user/userPreferences/edit_alamat.dart';
 import 'package:project_attendance_app/user/model/profil_item.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
+import 'package:project_attendance_app/user/userPreferences/edit_phoneNum.dart';
 
 class ProfileScreen extends StatefulWidget{
   const ProfileScreen({super.key});
@@ -23,10 +24,11 @@ class ProfileScreen extends StatefulWidget{
 }
 
 class _ProfileScreen extends State<ProfileScreen>{
-  final List<ProfilItem> _editingProfil = [];
-  List _listdata = [];
+  final CurrentUser _currentUser = Get.put(CurrentUser());
+  
   String _alamat = ''; // Tambahkan variabel name
   String _phone = ''; // Tambahkan variabel phone
+
 
   @override
   void initState() {
@@ -35,11 +37,20 @@ class _ProfileScreen extends State<ProfileScreen>{
     _currentUser.syncUserInfo();
   }
 
-  void _openEditOverlay() {
+  void _openEditAlamat() {
     showModalBottomSheet(
       context: context, 
       builder: (ctx){
-        return EditScreen(editProfile: _editProfile);
+        return EditAlamat(editProfile: _editProfile);
+      }
+    );
+  }
+
+  void _openEditPhone() {
+    showModalBottomSheet(
+      context: context, 
+      builder: (ctx){
+        return EditPhone(editProfile: _editProfile);
       }
     );
   }
@@ -51,8 +62,6 @@ class _ProfileScreen extends State<ProfileScreen>{
     });
     _updateUserProfile(_alamat, _phone);
   }
-
-  final CurrentUser _currentUser = Get.put(CurrentUser());
 
   Future<void> _updateUserProfile(String alamat, String phone) async {
     try {
@@ -79,7 +88,8 @@ class _ProfileScreen extends State<ProfileScreen>{
             _currentUser.user.nis,
             _currentUser.user.siswaPassword,
             _currentUser.user.nama,
-            _currentUser.user.ttl,
+            _currentUser.user.tmpt_lahir,
+            _currentUser.user.tgl_lahir,
             alamat,
             phone,
           );
@@ -96,6 +106,12 @@ class _ProfileScreen extends State<ProfileScreen>{
       Fluttertoast.showToast(msg: "Terjadi kesalahan.");
     }
   }
+
+  String formatDate(String date) {
+    DateTime dateTime = DateTime.parse(date);
+    return DateFormat('dd-MM-yyyy').format(dateTime);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -163,12 +179,12 @@ class _ProfileScreen extends State<ProfileScreen>{
                     const SizedBox(height: 28,),
                     InputDecorator(
                       decoration: const InputDecoration(
-                        icon: Icon(Icons.assignment_ind),
+                        icon: Icon(Icons.cake_outlined),
                         labelText: 'Tempat/Tanggal Lahir',
                         contentPadding: EdgeInsets.symmetric(vertical: 10)
                       ),
                       child: Text(
-                        _currentUser.user.ttl,
+                        '${_currentUser.user.tmpt_lahir}, ${formatDate(_currentUser.user.tgl_lahir)}',
                         style: const TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,
@@ -177,42 +193,60 @@ class _ProfileScreen extends State<ProfileScreen>{
                     ),
 
                     const SizedBox(height: 28,),
-                    InputDecorator(
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.assignment_ind),
-                        labelText: 'Alamat',
-                        contentPadding: EdgeInsets.symmetric(vertical: 10)
-                      ),
-                      child: Text(
-                        _currentUser.user.alamat,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
+                    InkWell(
+                      onTap: _openEditAlamat,
+                      splashColor: Colors.blueGrey,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.location_on_outlined),
+                          labelText: 'Alamat',
+                          contentPadding: EdgeInsets.symmetric(vertical: 10)
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _currentUser.user.alamat,
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            const Icon(Icons.edit)
+                          ],
                         ),
                       ),
                     ),
 
                     const SizedBox(height: 28,),
-                    InputDecorator(
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.phone),
-                        labelText: 'No. Handphone',
-                        contentPadding: EdgeInsets.symmetric(vertical: 10)
-                      ),
-                      child: Text(
-                        _currentUser.user.phone,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
+                    InkWell(
+                      onTap: _openEditPhone,
+                      splashColor: Colors.blueGrey,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.phone),
+                          labelText: 'No. Handphone',
+                          contentPadding: EdgeInsets.symmetric(vertical: 10)
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _currentUser.user.phone,
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            const Icon(Icons.edit)
+                          ],
                         ),
                       ),
-                  )]
+                    )
+                  ]
                   ),
-                  const SizedBox(height: 20,),
-            
-                  ElevatedButton(
-                    onPressed: _openEditOverlay,
-                    child: const Text('Edit')),
                   ],
               ),
             ),
