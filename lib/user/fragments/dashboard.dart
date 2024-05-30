@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+
 import 'package:project_attendance_app/user/model/absensi_siswa.dart';
 import 'package:project_attendance_app/user/userPreferences/present_preference.dart';
 
 class DashboardSiswa extends StatelessWidget {
   Future<List<AbsensiSiswa>> getUser() async {
     return await RememberPresentPrefs.getRememberAbsensi();
+
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard Siswa'),
@@ -37,6 +40,7 @@ class DashboardSiswa extends StatelessWidget {
           }
         },
       ),
+
     );
   }
 }

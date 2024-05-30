@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:ffi';
+
 class Siswa {
+
   final String nis;
   final String nama;
   final String kodeKelas;
@@ -61,4 +65,5 @@ class Siswa {
   String get getAlamat => alamat;
   DateTime get getTglLahir => tglLahir;
   String get getSiswaPassword => siswaPassword;
+
 }
