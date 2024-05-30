@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_attendance_app/user/authentication/forgot_password.dart';
 import 'package:project_attendance_app/user/fragments/dashboard.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
@@ -185,7 +186,9 @@ class _LoginPage extends State<LoginPage> {
                     const SizedBox(height: 20),
                     Center(
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.to(() => ForgotPasswordPage());
+                        },
                         child: const Text(
                           "Lupa Password",
                           style: TextStyle(

@@ -14,15 +14,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_attendance_app/user/userPreferences/edit_phoneNum.dart';
 
-class ProfileScreen extends StatefulWidget{
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
-  
+
   @override
   State<ProfileScreen> createState() {
     return _ProfileScreen();
   }
 }
 
+class _ProfileScreen extends State<ProfileScreen> {
+  final List<ProfilItem> _editingProfil = [];
+  List _listdata = [];
 class _ProfileScreen extends State<ProfileScreen>{
   final CurrentUser _currentUser = Get.put(CurrentUser());
   
@@ -48,6 +51,11 @@ class _ProfileScreen extends State<ProfileScreen>{
 
   void _openEditPhone() {
     showModalBottomSheet(
+        context: context,
+        builder: (ctx) {
+          return EditScreen(editProfile: _editProfile);
+        });
+
       context: context, 
       builder: (ctx){
         return EditPhone(editProfile: _editProfile);
@@ -55,7 +63,7 @@ class _ProfileScreen extends State<ProfileScreen>{
     );
   }
 
-  void _editProfile(ProfilItem item){
+  void _editProfile(ProfilItem item) {
     setState(() {
       _alamat = item.alamat;
       _phone = item.noHp;
@@ -95,7 +103,6 @@ class _ProfileScreen extends State<ProfileScreen>{
           );
 
           _currentUser.updateUserInfo(updatedUser);
-
         } else {
           Fluttertoast.showToast(msg: "Gagal memperbarui profil.");
         }
@@ -117,18 +124,18 @@ class _ProfileScreen extends State<ProfileScreen>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: 
-          IconButton(
-            onPressed: (){
+        leading: IconButton(
+            onPressed: () {
               Navigator.pop(context);
-            }, 
-            icon: const Icon(Icons.arrow_back, color: Colors.white,)),
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            )),
         title: Text(
           'Profil',
           style: GoogleFonts.lato(
-            color: Colors.white,
-            fontWeight: FontWeight.bold
-          ),
+              color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.blue,
       ),
@@ -142,15 +149,15 @@ class _ProfileScreen extends State<ProfileScreen>{
               child: Column(
                 children: [
                   const BuildEditImage(),
-                  const SizedBox(height: 35,),
-                  
+                  const SizedBox(
+                    height: 35,
+                  ),
                   Column(children: [
                     InputDecorator(
                       decoration: const InputDecoration(
-                        icon: Icon(Icons.assignment_ind),
-                        labelText: 'NIP',
-                        contentPadding: EdgeInsets.symmetric(vertical: 10)
-                      ),
+                          icon: Icon(Icons.assignment_ind),
+                          labelText: 'NIP',
+                          contentPadding: EdgeInsets.symmetric(vertical: 10)),
                       child: Text(
                         _currentUser.user.nis,
                         style: const TextStyle(
@@ -159,14 +166,14 @@ class _ProfileScreen extends State<ProfileScreen>{
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 28,),
+                    const SizedBox(
+                      height: 28,
+                    ),
                     InputDecorator(
                       decoration: const InputDecoration(
-                        icon: Icon(Icons.person),
-                        labelText: 'Nama',
-                        contentPadding: EdgeInsets.symmetric(vertical: 10)
-                      ),
+                          icon: Icon(Icons.person),
+                          labelText: 'Nama',
+                          contentPadding: EdgeInsets.symmetric(vertical: 10)),
                       child: Text(
                         _currentUser.user.nama,
                         style: const TextStyle(
@@ -175,14 +182,20 @@ class _ProfileScreen extends State<ProfileScreen>{
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 28,),
+                    const SizedBox(
+                      height: 28,
+                    ),
                     InputDecorator(
                       decoration: const InputDecoration(
+                          icon: Icon(Icons.assignment_ind),
+                          labelText: 'Tempat/Tanggal Lahir',
+                          contentPadding: EdgeInsets.symmetric(vertical: 10)),
+
                         icon: Icon(Icons.cake_outlined),
                         labelText: 'Tempat/Tanggal Lahir',
                         contentPadding: EdgeInsets.symmetric(vertical: 10)
                       ),
+
                       child: Text(
                         '${_currentUser.user.tmpt_lahir}, ${formatDate(_currentUser.user.tgl_lahir)}',
                         style: const TextStyle(
@@ -191,6 +204,46 @@ class _ProfileScreen extends State<ProfileScreen>{
                         ),
                       ),
                     ),
+
+                    const SizedBox(
+                      height: 28,
+                    ),
+                    InputDecorator(
+                      decoration: const InputDecoration(
+                          icon: Icon(Icons.assignment_ind),
+                          labelText: 'Alamat',
+                          contentPadding: EdgeInsets.symmetric(vertical: 10)),
+                      child: Text(
+                        _currentUser.user.alamat,
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 28,
+                    ),
+                    InputDecorator(
+                      decoration: const InputDecoration(
+                          icon: Icon(Icons.phone),
+                          labelText: 'No. Handphone',
+                          contentPadding: EdgeInsets.symmetric(vertical: 10)),
+                      child: Text(
+                        _currentUser.user.phone,
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    )
+                  ]),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                      onPressed: _openEditOverlay, child: const Text('Edit')),
+                ],
 
                     const SizedBox(height: 28,),
                     InkWell(
@@ -248,6 +301,7 @@ class _ProfileScreen extends State<ProfileScreen>{
                   ]
                   ),
                   ],
+
               ),
             ),
           ),
