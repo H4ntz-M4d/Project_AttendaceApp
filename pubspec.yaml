@@ -72,6 +72,9 @@ flutter:
     - images/polinema.png
     - images/Siswa.png
     - images/3Logo.png
+    - images/LogoSplash.png
+    - images/art.png
+    - images/Kolaborasi.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
