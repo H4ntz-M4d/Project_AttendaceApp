@@ -5,4 +5,5 @@ class API {
   static const login = "$hostConnect/user/login.php";
   static const updateProfile = "$hostConnect/user/update_profile.php";
   static const getData = "$hostConnect/user/get_Data.php";
+  static const getRecord = "$hostConnect/user/get_recoerd.php";
 }
