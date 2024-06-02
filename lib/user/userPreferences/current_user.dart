@@ -6,7 +6,15 @@ import "package:project_attendance_app/user/userPreferences/user_preferences.dar
 import 'package:http/http.dart' as http;
 
 class CurrentUser extends GetxController {
-  Rx<Siswa> _currentUser = Siswa('', '', '', '', '', '', '').obs;
+  Rx<Siswa> _currentUser = Siswa(
+          nis: '',
+          siswaPassword: '',
+          nama: '',
+          tmpt_lahir: '',
+          tgl_lahir: '',
+          alamat: '',
+          phone: '')
+      .obs;
 
   Siswa get user => _currentUser.value;
 
@@ -22,7 +30,8 @@ class CurrentUser extends GetxController {
 
   Future<void> syncUserInfo() async {
     try {
-      var res = await http.get(Uri.parse('${API.getData}?nis=${_currentUser.value.nis}'));
+      var res = await http
+          .get(Uri.parse('${API.getData}?nis=${_currentUser.value.nis}'));
       if (res.statusCode == 200) {
         var resBody = jsonDecode(res.body);
         if (resBody['success'] == true) {
@@ -34,5 +43,4 @@ class CurrentUser extends GetxController {
       print("Error syncing user info: $error");
     }
   }
-
 }

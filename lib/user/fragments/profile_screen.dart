@@ -27,10 +27,9 @@ class _ProfileScreen extends State<ProfileScreen> {
   final List<ProfilItem> _editingProfil = [];
   List _listdata = [];
   final CurrentUser _currentUser = Get.put(CurrentUser());
-  
+
   String _alamat = ''; // Tambahkan variabel name
   String _phone = ''; // Tambahkan variabel phone
-
 
   @override
   void initState() {
@@ -61,13 +60,13 @@ class _ProfileScreen extends State<ProfileScreen> {
 
           // Update data lokal
           Siswa updatedUser = Siswa(
-            _currentUser.user.nis,
-            _currentUser.user.siswaPassword,
-            _currentUser.user.nama,
-            _currentUser.user.tmpt_lahir,
-            _currentUser.user.tgl_lahir,
-            alamat,
-            phone,
+            nis: _currentUser.user.nis,
+            siswaPassword: _currentUser.user.siswaPassword,
+            nama: _currentUser.user.nama,
+            tmpt_lahir: _currentUser.user.tmpt_lahir,
+            tgl_lahir: _currentUser.user.tgl_lahir,
+            alamat: alamat,
+            phone: phone,
           );
 
           _currentUser.updateUserInfo(updatedUser);
@@ -92,27 +91,24 @@ class _ProfileScreen extends State<ProfileScreen> {
 
   void _openEditAlamat() {
     showModalBottomSheet(
-      context: context, 
-      builder: (ctx){
-        return EditAlamat(editProfile: _editProfile);
-      }
-    );
+        context: context,
+        builder: (ctx) {
+          return EditAlamat(editProfile: _editProfile);
+        });
   }
 
   void _openEditPhone() {
     showModalBottomSheet(
-      context: context, 
-      builder: (ctx){
-        return EditPhone(editProfile: _editProfile);
-      }
-    );
+        context: context,
+        builder: (ctx) {
+          return EditPhone(editProfile: _editProfile);
+        });
   }
 
   String formatDate(String date) {
     DateTime dateTime = DateTime.parse(date);
     return DateFormat('dd-MM-yyyy').format(dateTime);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -176,11 +172,9 @@ class _ProfileScreen extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-                    
                     const SizedBox(
                       height: 28,
                     ),
-
                     InputDecorator(
                       decoration: const InputDecoration(
                           icon: Icon(Icons.assignment_ind),
@@ -192,19 +186,19 @@ class _ProfileScreen extends State<ProfileScreen> {
                           fontSize: 16.0,
                           color: Colors.black,
                         ),
-                      ),  
+                      ),
                     ),
-
-                  const SizedBox(height: 28,),
+                    const SizedBox(
+                      height: 28,
+                    ),
                     InkWell(
                       onTap: _openEditAlamat,
                       splashColor: Colors.blueGrey,
                       child: InputDecorator(
                         decoration: const InputDecoration(
-                          icon: Icon(Icons.location_on_outlined),
-                          labelText: 'Alamat',
-                          contentPadding: EdgeInsets.symmetric(vertical: 10)
-                        ),
+                            icon: Icon(Icons.location_on_outlined),
+                            labelText: 'Alamat',
+                            contentPadding: EdgeInsets.symmetric(vertical: 10)),
                         child: Row(
                           children: [
                             Expanded(
@@ -221,17 +215,17 @@ class _ProfileScreen extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 28,),
+                    const SizedBox(
+                      height: 28,
+                    ),
                     InkWell(
                       onTap: _openEditPhone,
                       splashColor: Colors.blueGrey,
                       child: InputDecorator(
                         decoration: const InputDecoration(
-                          icon: Icon(Icons.phone),
-                          labelText: 'No. Handphone',
-                          contentPadding: EdgeInsets.symmetric(vertical: 10)
-                        ),
+                            icon: Icon(Icons.phone),
+                            labelText: 'No. Handphone',
+                            contentPadding: EdgeInsets.symmetric(vertical: 10)),
                         child: Row(
                           children: [
                             Expanded(
@@ -248,8 +242,8 @@ class _ProfileScreen extends State<ProfileScreen> {
                         ),
                       ),
                     )
-                  ]
-                )],
+                  ])
+                ],
               ),
             ),
           ),
