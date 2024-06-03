@@ -55,13 +55,13 @@ class DashboardSiswa extends StatelessWidget {
                     },
                   ),
 
-                  IconButton(
-                    icon: const Icon(Icons.assignment_turned_in_sharp),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => DetailAbsen()));
-                    },
-                  ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.assignment_turned_in_sharp),
+                  //   onPressed: () {
+                  //     Navigator.of(context).push(
+                  //         MaterialPageRoute(builder: (ctx) => DetailAbsen()));
+                  //   },
+                  // ),
                 ],
               ),
             ),
