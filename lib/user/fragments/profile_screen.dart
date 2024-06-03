@@ -106,7 +106,7 @@ class _ProfileScreen extends State<ProfileScreen> {
   }
 
   String formatDate(String date) {
-    DateTime dateTime = DateTime.parse(date);
+    DateTime dateTime = DateFormat('dd-MM-yyyy').parse(date);
     return DateFormat('dd-MM-yyyy').format(dateTime);
   }
 
@@ -181,7 +181,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                           labelText: 'Tempat/Tanggal Lahir',
                           contentPadding: EdgeInsets.symmetric(vertical: 10)),
                       child: Text(
-                        '${_currentUser.user.tmpt_lahir}, ${formatDate(_currentUser.user.tgl_lahir)}',
+                        '${_currentUser.user.tmpt_lahir}, ${_currentUser.user.tgl_lahir}',
                         style: const TextStyle(
                           fontSize: 16.0,
                           color: Colors.black,

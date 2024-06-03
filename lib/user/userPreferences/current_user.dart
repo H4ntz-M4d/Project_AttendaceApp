@@ -20,7 +20,12 @@ class CurrentUser extends GetxController {
 
   getUserInfo() async {
     Siswa? getUserInfoFromLocalStorage = await RememberUserPrefs.readUserInfo();
-    _currentUser.value = getUserInfoFromLocalStorage!;
+    if (getUserInfoFromLocalStorage != null) {
+      _currentUser.value = getUserInfoFromLocalStorage;
+    } else {
+      // Handle the case when getUserInfoFromLocalStorage is null
+      // For example, you could set a default value or display an error message
+    }
   }
 
   updateUserInfo(Siswa updatedUser) async {

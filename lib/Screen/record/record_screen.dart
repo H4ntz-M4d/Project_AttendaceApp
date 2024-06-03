@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_attendance_app/bloc/record_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/profile_screen.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
 import 'package:project_attendance_app/user/model/user.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -190,50 +193,73 @@ class RecordPage extends StatefulWidget {
 class _RecordPageState extends State<RecordPage> {
   final _controller = SidebarXController(selectedIndex: 0, extended: true);
   final _key = GlobalKey<ScaffoldState>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        final isSmallScreen = MediaQuery.of(context).size.width < 600;
-        return Scaffold(
-          key: _key,
-          appBar: isSmallScreen
-              ? AppBar(
-                  backgroundColor: canvasColor,
-                  title: Text(
-                    _getTitleByIndex(_controller.selectedIndex),
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: IconButton(
-                      onPressed: () {
-                        _key.currentState?.openDrawer();
-                      },
-                      icon: const Icon(
-                        Icons.menu,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                )
-              : null,
-          drawer: ExampleSidebarX(controller: _controller),
-          body: Row(
-            children: [
-              if (!isSmallScreen) ExampleSidebarX(controller: _controller),
-              Expanded(
-                child: Center(
-                  child: _ScreensExample(
-                    controller: _controller,
-                  ),
-                ),
+  Future<bool> _onWillPop(BuildContext context) async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Konfirmasi'),
+            content: Text('Apakah Anda ingin meninggalkan aplikasi?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Tidak'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Iya'),
               ),
             ],
           ),
-        );
-      },
+        ) ??
+        false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () => _onWillPop(context),
+      child: Builder(
+        builder: (context) {
+          final isSmallScreen = MediaQuery.of(context).size.width < 600;
+          return Scaffold(
+            key: _key,
+            appBar: isSmallScreen
+                ? AppBar(
+                    backgroundColor: canvasColor,
+                    title: Text(
+                      _getTitleByIndex(_controller.selectedIndex),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    leading: Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: IconButton(
+                        onPressed: () {
+                          _key.currentState?.openDrawer();
+                        },
+                        icon: const Icon(
+                          Icons.menu,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                : null,
+            drawer: ExampleSidebarX(controller: _controller),
+            body: Row(
+              children: [
+                if (!isSmallScreen) ExampleSidebarX(controller: _controller),
+                Expanded(
+                  child: Center(
+                    child: _ScreensExample(
+                      controller: _controller,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -266,6 +292,8 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  final CurrentUser _rememberCurrentUser = Get.put(CurrentUser());
+
   Future<Map<String, dynamic>> getUserAndAbsensi() async {
     final results = await Future.wait([
       RememberUserPrefs.readUserInfo(),
@@ -300,47 +328,54 @@ class _UserPageState extends State<UserPage> {
         .constrained(minHeight: MediaQuery.of(context).size.height - (2 * 30))
         .scrollable();
 
-    return FutureBuilder<Map<String, dynamic>>(
-      future: getUserAndAbsensi(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData) {
-          return Center(child: Text('No data available'));
-        } else {
-          Siswa user = snapshot.data!['user'];
-          List<RecordAbsen> absensiToCard = snapshot.data!['absensi'];
-          return BlocProvider(
-            create: (context) => RecordBloc()..add(LoadRecordEvent()),
-            child: BlocBuilder<RecordBloc, RecordState>(
-              builder: (context, state) {
-                if (state is RecordLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (state is RecordError) {
-                  return Center(child: Text('Error: ${state.message}'));
-                } else if (state is RecordLoaded) {
-                  return <Widget>[
-                    UserCard(
-                      user: user,
-                      histories: absensiToCard,
-                    ),
-                    ActionsRow(
-                      onActionSelected: (actionName) =>
-                          handleActionSelected(context, actionName),
-                    ),
-                    Settings(histories: state.record),
-                  ].toColumn().parent(page);
-                } else {
-                  return Center(child: Text('No data available'));
-                }
-              },
-            ),
+    return GetBuilder(
+        init: CurrentUser(),
+        initState: (CurrentUser) {
+          _rememberCurrentUser.getUserInfo();
+        },
+        builder: (controller) {
+          return FutureBuilder<Map<String, dynamic>>(
+            future: getUserAndAbsensi(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData) {
+                return Center(child: Text('No data available'));
+              } else {
+                Siswa user = snapshot.data!['user'];
+                List<RecordAbsen> absensiToCard = snapshot.data!['absensi'];
+                return BlocProvider(
+                  create: (context) => RecordBloc()..add(LoadRecordEvent()),
+                  child: BlocBuilder<RecordBloc, RecordState>(
+                    builder: (context, state) {
+                      if (state is RecordLoading) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (state is RecordError) {
+                        return Center(child: Text('Error: ${state.message}'));
+                      } else if (state is RecordLoaded) {
+                        return <Widget>[
+                          UserCard(
+                            user: user,
+                            histories: absensiToCard,
+                          ),
+                          ActionsRow(
+                            onActionSelected: (actionName) =>
+                                handleActionSelected(context, actionName),
+                          ),
+                          Settings(histories: state.record),
+                        ].toColumn().parent(page);
+                      } else {
+                        return Center(child: Text('No data available'));
+                      }
+                    },
+                  ),
+                );
+              }
+            },
           );
-        }
-      },
-    );
+        });
   }
 }
 
@@ -356,13 +391,10 @@ class UserCard extends StatefulWidget {
 class _UserCardState extends State<UserCard> {
   Widget _buildUserRow(Siswa user) {
     return <Widget>[
-      Icon(Icons.account_circle)
-          .decorated(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-          )
-          .constrained(height: 50, width: 50)
-          .padding(right: 10),
+      const CircleAvatar(
+        radius: 25,
+        backgroundImage: AssetImage('images/art.png'),
+      ).padding(top: 5, right: 10),
       <Widget>[
         Text(
           user.nis,
@@ -425,7 +457,8 @@ class _UserCardState extends State<UserCard> {
     return <Widget>[
       ElevatedButton(
           onPressed: () {
-            Get.offAll(() => const ProfileScreen());
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
           },
           child: Text("Lihat Profil >>"),
           style: ElevatedButton.styleFrom(side: BorderSide.none)),
