@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_attendance_app/bloc/record_bloc.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
+import 'package:project_attendance_app/user/fragments/detail_absen.dart';
 import 'package:project_attendance_app/user/fragments/profile_screen.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
 import 'package:project_attendance_app/user/model/user.dart';
@@ -457,10 +458,10 @@ class _UserCardState extends State<UserCard> {
     return <Widget>[
       ElevatedButton(
           onPressed: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (ctx) => const DetailAbsen()));
           },
-          child: Text("Lihat Profil >>"),
+          child: Text("Lihat Detail >>"),
           style: ElevatedButton.styleFrom(side: BorderSide.none)),
     ].toRow(mainAxisAlignment: MainAxisAlignment.center);
   }

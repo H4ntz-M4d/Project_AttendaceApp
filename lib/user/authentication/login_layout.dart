@@ -63,9 +63,7 @@ class _LoginPage extends State<LoginPage> {
           await RememberUserPrefs.storeUserInfo(userInfo);
           await RememberRecordPrefs.saveRememberAbsensi(historyAbsensi);
 
-          Future.delayed(const Duration(milliseconds: 2000), () {
-            Get.offAll(() => const RecordPage());
-          });
+          Get.offAll(() => const RecordPage());
         } else {
           Fluttertoast.showToast(msg: "Maaf tidak dapat Login, Coba Lagi.");
         }

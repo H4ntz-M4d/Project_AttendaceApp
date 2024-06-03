@@ -2,9 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,20 +29,25 @@ class _DetailAbsenState extends State<DetailAbsen> {
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
-    _fetchEvents();
+    _addEvents();
   }
 
   Future<void> _fetchEvents() async {
-    final String nis =
-        '001'; // NIS yang ingin diambil, sesuaikan dengan kebutuhan Anda.
-    final response = await http.get(Uri.parse(API.getRecord));
+    final CurrentUser _currentUser = Get.put(
+        CurrentUser()); // NIS yang ingin diambil, sesuaikan dengan kebutuhan Anda.
+    final response = await http.post(Uri.parse(API.getRecord), body: {
+      'nis': _currentUser.user.nis,
+    });
+
+    print(response.statusCode);
+    print(response.body);
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final data = jsonDecode(response.body);
       if (data['success']) {
         setState(() {
           for (var event in data['events']) {
-            DateTime eventDate = DateTime.parse(event['record']);
+            DateTime eventDate = DateTime.parse(event['kalender_absensi']);
             if (this.event[eventDate] == null) {
               this.event[eventDate] = [];
             }
@@ -50,6 +58,16 @@ class _DetailAbsenState extends State<DetailAbsen> {
     } else {
       // Handle error
     }
+  }
+
+  void _addEvents() {
+    event[DateTime.utc(today.year, 5, 25)] = [
+      RecordAbsen(
+          idAbsensi: '001',
+          nis: '101',
+          kalenderAbsensi: DateTime.utc(today.year, 5, 25),
+          kodeKeterangan: 'H'),
+    ];
   }
 
   List<RecordAbsen> _getEventsForDay(DateTime day) {
