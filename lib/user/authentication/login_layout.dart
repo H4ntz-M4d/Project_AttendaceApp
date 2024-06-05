@@ -51,7 +51,7 @@ class _LoginPage extends State<LoginPage> {
         if (resBodyOfLogin["success"] == true) {
           Fluttertoast.showToast(msg: "Selamat anda berhasil Login.");
 
-          var userData = resBodyOfLogin["userData"][0];
+          var userData = resBodyOfLogin["userData"];
           userData.forEach((key, value) {
             print("$key: $value");
           });
@@ -63,9 +63,6 @@ class _LoginPage extends State<LoginPage> {
             historyAbsensi.add(RecordAbsen.fromJson(history));
           }
 
-          for (var history in resBodyOfLogin["userHistory"]) {
-            historyAbsensi.add(RecordAbsen.fromJson(history));
-          }
           await RememberUserPrefs.storeUserInfo(userInfo);
           await RememberRecordPrefs.saveRememberAbsensi(historyAbsensi);
 

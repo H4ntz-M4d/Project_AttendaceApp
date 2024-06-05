@@ -10,10 +10,17 @@ class ProfileUser {
   String alamat;
   String phone;
 
-  ProfileUser(this.nis, this.siswaPassword, this.nama, this.tmpt_lahir, this.tgl_lahir, this.alamat, this.phone);
+  ProfileUser(this.nis, this.siswaPassword, this.nama, this.tmpt_lahir,
+      this.tgl_lahir, this.alamat, this.phone);
 
-  factory ProfileUser.fromJson(Map<String, dynamic> json) => ProfileUser(json['nis'],
-      json['siswa_password'], json['nama'], json['tmpt_lahir'], json['tgl_lahir'], json['alamat'], json['phone']);
+  factory ProfileUser.fromJson(Map<String, dynamic> json) => ProfileUser(
+      json['nis'],
+      json['siswa_password'],
+      json['nama'],
+      json['tmpt_lahir'],
+      json['tgl_lahir'],
+      json['alamat'],
+      json['phone']);
 
   Map<String, dynamic> toJson() => {
         'nis': nis,

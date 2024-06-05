@@ -540,8 +540,6 @@ class ActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => <Widget>[
         const Text(
-        Text(
-
           'Hanya tampilkan: ',
           style: TextStyle(
             color: Color(0xFF42526F),
@@ -608,8 +606,6 @@ class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<SettingsItemModel> setItem = histories.map((history) {
-    List<SettingsItemModel?> setItem = histories.map((history) {
-
       switch (history.kodeKeterangan) {
         case 'HD':
           return SettingsItemModel(
@@ -651,10 +647,7 @@ class Settings extends StatelessWidget {
     }).toList();
     return (setItem
         .map((settingsItem) => SettingsItem(
-
               settingsItem.icon,
-              settingsItem!.icon,
-
               settingsItem.color,
               settingsItem.title,
               settingsItem.description,
