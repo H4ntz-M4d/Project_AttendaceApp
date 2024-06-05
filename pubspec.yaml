@@ -44,6 +44,10 @@ dependencies:
   google_fonts: ^6.2.0
   intl: ^0.19.0
   table_calendar: ^3.1.1
+  bloc: ^8.1.4
+  sidebarx: ^0.17.1
+  styled_widget: ^0.4.1
+  flutter_bloc: ^8.1.5
 
 dev_dependencies:
   flutter_test:

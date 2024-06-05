@@ -10,16 +10,26 @@ class Siswa {
   String alamat;
   String phone;
 
-  factory Siswa.fromJson(Map<String, dynamic> json) => Siswa(
-      json['nis'],
-      json['siswa_password'],
-      json['nama'],
-      json['tmpt_lahir'],
-      json['tgl_lahir'],
-      json['alamat'],
-      json['phone']);
-  
-  Siswa(this.nis, this.siswaPassword, this.nama, this.tmpt_lahir, this.tgl_lahir, this.alamat, this.phone);
+  factory Siswa.fromJson(Map<String, dynamic> json) {
+    return Siswa(
+      nis: json['nis'] ?? '',
+      siswaPassword: json['siswa_password'] ?? '',
+      nama: json['nama'] ?? '',
+      tmpt_lahir: json['tmpt_lahir'] ?? '', // Provide default value if null
+      tgl_lahir: json['tgl_lahir'] ?? '',
+      alamat: json['alamat'] ?? '',
+      phone: json['phone'] ?? '',
+    );
+  }
+
+  Siswa(
+      {required this.nis,
+      required this.siswaPassword,
+      required this.nama,
+      required this.tmpt_lahir,
+      required this.tgl_lahir,
+      required this.alamat,
+      required this.phone});
 
   Map<String, dynamic> toJson() => {
         'nis': nis,

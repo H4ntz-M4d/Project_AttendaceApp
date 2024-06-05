@@ -3,12 +3,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_attendance_app/Screen/record/record_screen.dart';
 import 'package:project_attendance_app/user/authentication/forgot_password.dart';
 import 'package:project_attendance_app/user/fragments/dashboard.dart';
+import 'package:project_attendance_app/user/model/record_absen.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -48,18 +51,21 @@ class _LoginPage extends State<LoginPage> {
         if (resBodyOfLogin["success"] == true) {
           Fluttertoast.showToast(msg: "Selamat anda berhasil Login.");
 
-          var userData = resBodyOfLogin["userData"];
+          var userData = resBodyOfLogin["userData"][0];
           userData.forEach((key, value) {
             print("$key: $value");
           });
 
-          Siswa userInfo = Siswa.fromJson(resBodyOfLogin["userData"]);
+          Siswa userInfo = Siswa.fromJson(resBodyOfLogin["userData"][0]);
+          List<RecordAbsen> historyAbsensi = [];
 
+          for (var history in resBodyOfLogin["userHistory"]) {
+            historyAbsensi.add(RecordAbsen.fromJson(history));
+          }
           await RememberUserPrefs.storeUserInfo(userInfo);
+          await RememberRecordPrefs.saveRememberAbsensi(historyAbsensi);
 
-          Future.delayed(const Duration(milliseconds: 2000), () {
-            Get.offAll(() => DashboardSiswa());
-          });
+          Get.offAll(() => const RecordPage());
         } else {
           Fluttertoast.showToast(msg: "Maaf tidak dapat Login, Coba Lagi.");
         }
