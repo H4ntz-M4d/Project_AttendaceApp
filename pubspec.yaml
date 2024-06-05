@@ -47,6 +47,7 @@ dependencies:
   sidebarx: ^0.17.1
   styled_widget: ^0.4.1
   fluttertoast: ^8.2.5
+  fl_chart: ^0.68.0
 
 dev_dependencies:
   flutter_test:

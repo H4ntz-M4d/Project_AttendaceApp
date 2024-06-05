@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
 import 'package:project_attendance_app/bloc/record_bloc.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
@@ -140,7 +141,9 @@ class _ScreensExample extends StatelessWidget {
         final pageTitle = _getTitleByIndex(controller.selectedIndex);
         switch (controller.selectedIndex) {
           case 0:
-            return UserPage();
+            return const UserPage();
+          case 1:
+            return const RecordDetailPage();
           default:
             return Text(
               pageTitle,
@@ -365,7 +368,7 @@ class _UserPageState extends State<UserPage> {
                             onActionSelected: (actionName) =>
                                 handleActionSelected(context, actionName),
                           ),
-                          Settings(histories: state.record),
+                          Settings(histories: (state.record)),
                         ].toColumn().parent(page);
                       } else {
                         return Center(child: Text('No data available'));
@@ -534,7 +537,7 @@ class ActionsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => <Widget>[
-        Text(
+        const Text(
           'Hanya tampilkan: ',
           style: TextStyle(
             color: Color(0xFF42526F),
@@ -567,40 +570,13 @@ class SettingsItemModel {
   });
 }
 
-const List<SettingsItemModel> settingsItems = [
-  SettingsItemModel(
-    icon: Icons.co_present,
-    color: Color(0xff8D7AEE),
-    title: 'Hadir',
-    description: 'Ensure your harvesting address',
-  ),
-  SettingsItemModel(
-    icon: Icons.sick,
-    color: Color(0xffF468B7),
-    title: 'Sakit',
-    description: 'System permission change',
-  ),
-  SettingsItemModel(
-    icon: Icons.receipt,
-    color: Color(0xffFEC85C),
-    title: 'Izin',
-    description: 'Basic functional settings',
-  ),
-  SettingsItemModel(
-    icon: Icons.close,
-    color: Color(0xff5FD0D3),
-    title: 'Alpa',
-    description: 'Take over the news in time',
-  ),
-];
-
 class Settings extends StatelessWidget {
   final List<RecordAbsen> histories;
   const Settings({super.key, required this.histories});
 
   @override
   Widget build(BuildContext context) {
-    List<SettingsItemModel?> setItem = histories.map((history) {
+    List<SettingsItemModel> setItem = histories.map((history) {
       switch (history.kodeKeterangan) {
         case 'HD':
           return SettingsItemModel(
@@ -630,11 +606,18 @@ class Settings extends StatelessWidget {
             title: 'Alpha',
             description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
           );
+        default:
+          return SettingsItemModel(
+            icon: Icons.co_present,
+            color: Color(0xff8D7AEE),
+            title: 'Hadir',
+            description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
+          );
       }
     }).toList();
     return (setItem
         .map((settingsItem) => SettingsItem(
-              settingsItem!.icon,
+              settingsItem.icon,
               settingsItem.color,
               settingsItem.title,
               settingsItem.description,

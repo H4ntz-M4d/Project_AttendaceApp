@@ -40,6 +40,8 @@ class _LoginPage extends State<LoginPage> {
         },
       );
 
+      print("Response status: ${res.statusCode}");
+      print("Response body: ${res.body}");
       if (res.statusCode == 200) {
         var resBodyOfLogin = jsonDecode(res.body);
         print("Response status: ${res.statusCode}");
@@ -48,12 +50,12 @@ class _LoginPage extends State<LoginPage> {
         if (resBodyOfLogin["success"] == true) {
           Fluttertoast.showToast(msg: "Selamat anda berhasil Login.");
 
-          var userData = resBodyOfLogin["userData"][0];
+          var userData = resBodyOfLogin["userData"];
           userData.forEach((key, value) {
             print("$key: $value");
           });
 
-          Siswa userInfo = Siswa.fromJson(resBodyOfLogin["userData"][0]);
+          Siswa userInfo = Siswa.fromJson(resBodyOfLogin["userData"]);
           List<RecordAbsen> historyAbsensi = [];
 
           for (var history in resBodyOfLogin["userHistory"]) {
