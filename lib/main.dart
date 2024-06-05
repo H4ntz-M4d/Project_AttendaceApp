@@ -5,6 +5,7 @@ import 'package:project_attendance_app/Screen/splashScreen/splash_layout.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/dashboard.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
+import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
 void main() {
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
           FutureBuilder(
         future: RememberUserPrefs.readUserInfo(),
         builder: (context, dataSnapshot) {
+          print(dataSnapshot.data);
           if (dataSnapshot.data == null) {
             return const SplashScreen();
           } else {

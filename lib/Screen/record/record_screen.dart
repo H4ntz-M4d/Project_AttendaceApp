@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
 import 'package:project_attendance_app/bloc/record_bloc.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
@@ -140,6 +141,9 @@ class _ScreensExample extends StatelessWidget {
         final pageTitle = _getTitleByIndex(controller.selectedIndex);
         switch (controller.selectedIndex) {
           case 0:
+            return const UserPage();
+          case 1:
+            return const RecordDetailPage();
             return UserPage();
           default:
             return Text(
@@ -365,6 +369,7 @@ class _UserPageState extends State<UserPage> {
                             onActionSelected: (actionName) =>
                                 handleActionSelected(context, actionName),
                           ),
+                          Settings(histories: (state.record)),
                           Settings(histories: state.record),
                         ].toColumn().parent(page);
                       } else {
@@ -534,7 +539,9 @@ class ActionsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => <Widget>[
+        const Text(
         Text(
+
           'Hanya tampilkan: ',
           style: TextStyle(
             color: Color(0xFF42526F),
@@ -600,7 +607,9 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<SettingsItemModel> setItem = histories.map((history) {
     List<SettingsItemModel?> setItem = histories.map((history) {
+
       switch (history.kodeKeterangan) {
         case 'HD':
           return SettingsItemModel(
@@ -630,11 +639,22 @@ class Settings extends StatelessWidget {
             title: 'Alpha',
             description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
           );
+
+        default:
+          return SettingsItemModel(
+            icon: Icons.co_present,
+            color: Color(0xff8D7AEE),
+            title: 'Hadir',
+            description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
+          );
       }
     }).toList();
     return (setItem
         .map((settingsItem) => SettingsItem(
+
+              settingsItem.icon,
               settingsItem!.icon,
+
               settingsItem.color,
               settingsItem.title,
               settingsItem.description,
