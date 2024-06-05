@@ -6,13 +6,26 @@ import "package:project_attendance_app/user/userPreferences/user_preferences.dar
 import 'package:http/http.dart' as http;
 
 class CurrentUser extends GetxController {
-  Rx<Siswa> _currentUser = Siswa('', '', '', '', '', '', '').obs;
+  Rx<Siswa> _currentUser = Siswa(
+          nis: '',
+          siswaPassword: '',
+          nama: '',
+          tmpt_lahir: '',
+          tgl_lahir: '',
+          alamat: '',
+          phone: '')
+      .obs;
 
   Siswa get user => _currentUser.value;
 
   getUserInfo() async {
     Siswa? getUserInfoFromLocalStorage = await RememberUserPrefs.readUserInfo();
-    _currentUser.value = getUserInfoFromLocalStorage!;
+    if (getUserInfoFromLocalStorage != null) {
+      _currentUser.value = getUserInfoFromLocalStorage;
+    } else {
+      // Handle the case when getUserInfoFromLocalStorage is null
+      // For example, you could set a default value or display an error message
+    }
   }
 
   updateUserInfo(Siswa updatedUser) async {
@@ -22,7 +35,8 @@ class CurrentUser extends GetxController {
 
   Future<void> syncUserInfo() async {
     try {
-      var res = await http.get(Uri.parse('${API.getData}?nis=${_currentUser.value.nis}'));
+      var res = await http
+          .get(Uri.parse('${API.getData}?nis=${_currentUser.value.nis}'));
       if (res.statusCode == 200) {
         var resBody = jsonDecode(res.body);
         if (resBody['success'] == true) {
@@ -34,5 +48,4 @@ class CurrentUser extends GetxController {
       print("Error syncing user info: $error");
     }
   }
-
 }

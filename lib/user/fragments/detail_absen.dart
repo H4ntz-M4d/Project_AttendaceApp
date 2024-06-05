@@ -128,7 +128,7 @@ class _DetailAbsenState extends State<DetailAbsen> {
                             decoration: BoxDecoration(
                                 border: Border.all(),
                                 borderRadius: BorderRadius.circular(5)),
-                            child: Text(event.namaKeterangan)),
+                            child: Text(event.kodeKeterangan)),
                       )),
             ],
           ),

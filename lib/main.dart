@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_attendance_app/Screen/record/record_screen.dart';
 import 'package:project_attendance_app/Screen/splashScreen/splash_layout.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/dashboard.dart';
@@ -23,14 +24,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.purple,
       ),
       home:
-          // const LoginPage1()
           FutureBuilder(
         future: RememberUserPrefs.readUserInfo(),
         builder: (context, dataSnapshot) {
           if (dataSnapshot.data == null) {
             return const SplashScreen();
           } else {
-            return DashboardSiswa();
+            return const RecordPage();
           }
         },
       ),

@@ -3,6 +3,7 @@ class API {
 
   static const hostConnectUser = "$hostConnect/user";
   static const login = "$hostConnect/user/login.php";
+  static const login = "$hostConnect/user/login2.php";
   static const updateProfile = "$hostConnect/user/update_profile.php";
   static const getData = "$hostConnect/user/get_Data.php";
   static const forgotPassword = "$hostConnect/user/forgot_password.php";
