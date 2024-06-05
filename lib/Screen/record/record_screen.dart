@@ -144,6 +144,7 @@ class _ScreensExample extends StatelessWidget {
             return const UserPage();
           case 1:
             return const RecordDetailPage();
+            return UserPage();
           default:
             return Text(
               pageTitle,
@@ -369,6 +370,7 @@ class _UserPageState extends State<UserPage> {
                                 handleActionSelected(context, actionName),
                           ),
                           Settings(histories: (state.record)),
+                          Settings(histories: state.record),
                         ].toColumn().parent(page);
                       } else {
                         return Center(child: Text('No data available'));
@@ -538,6 +540,8 @@ class ActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => <Widget>[
         const Text(
+        Text(
+
           'Hanya tampilkan: ',
           style: TextStyle(
             color: Color(0xFF42526F),
@@ -570,6 +574,33 @@ class SettingsItemModel {
   });
 }
 
+const List<SettingsItemModel> settingsItems = [
+  SettingsItemModel(
+    icon: Icons.co_present,
+    color: Color(0xff8D7AEE),
+    title: 'Hadir',
+    description: 'Ensure your harvesting address',
+  ),
+  SettingsItemModel(
+    icon: Icons.sick,
+    color: Color(0xffF468B7),
+    title: 'Sakit',
+    description: 'System permission change',
+  ),
+  SettingsItemModel(
+    icon: Icons.receipt,
+    color: Color(0xffFEC85C),
+    title: 'Izin',
+    description: 'Basic functional settings',
+  ),
+  SettingsItemModel(
+    icon: Icons.close,
+    color: Color(0xff5FD0D3),
+    title: 'Alpa',
+    description: 'Take over the news in time',
+  ),
+];
+
 class Settings extends StatelessWidget {
   final List<RecordAbsen> histories;
   const Settings({super.key, required this.histories});
@@ -577,6 +608,8 @@ class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<SettingsItemModel> setItem = histories.map((history) {
+    List<SettingsItemModel?> setItem = histories.map((history) {
+
       switch (history.kodeKeterangan) {
         case 'HD':
           return SettingsItemModel(
@@ -606,6 +639,7 @@ class Settings extends StatelessWidget {
             title: 'Alpha',
             description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
           );
+
         default:
           return SettingsItemModel(
             icon: Icons.co_present,
@@ -617,7 +651,10 @@ class Settings extends StatelessWidget {
     }).toList();
     return (setItem
         .map((settingsItem) => SettingsItem(
+
               settingsItem.icon,
+              settingsItem!.icon,
+
               settingsItem.color,
               settingsItem.title,
               settingsItem.description,

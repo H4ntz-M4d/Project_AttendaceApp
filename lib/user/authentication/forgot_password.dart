@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -225,16 +226,33 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            )),
+        title: Text(
+          'Password',
+          style: GoogleFonts.plusJakartaSans(
+              color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.blue,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(left: 15.0),
           child: Container(
             child: Form(
               key: formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 30),
                   const Text(
                     'Forgot Password?',
                     style: TextStyle(
@@ -262,29 +280,28 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    //nis and nip field
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 0.3,
-                      ),
-                      color: Color(0xFFF5F5F5),
-                    ),
-                    height: 50,
-                    width: 370,
-                    child: TextFormField(
-                      controller: userIdController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        filled: true,
-                        fillColor: Color(0xFFF5F5F5),
-                      ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Masukkan NIS/NIP';
-                        }
-                        return null;
-                      },
+                  Padding(
+                    padding: const EdgeInsets.only(right: 25),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextFormField(
+                          controller: userIdController,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            border: OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Color(0xFFF5F5F5),
+                          ),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Masukkan NIS/NIP';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -296,35 +313,34 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    //tgl_lahir field
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 0.3,
-                      ),
-                      color: Color(0xFFF5F5F5),
-                    ),
-                    height: 50,
-                    width: 370,
-                    child: TextFormField(
-                      controller: tglLahirController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        filled: true,
-                        fillColor: const Color(0xFFF5F5F5),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.calendar_today),
-                          onPressed: () {
-                            _selectDate(context);
+                  Padding(
+                    padding: const EdgeInsets.only(right: 25),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextFormField(
+                          controller: tglLahirController,
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            border: const OutlineInputBorder(),
+                            filled: true,
+                            fillColor: const Color(0xFFF5F5F5),
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.calendar_today),
+                              onPressed: () {
+                                _selectDate(context);
+                              },
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Isi Tanggal Lahir";
+                            }
+                            return null;
                           },
                         ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Isi Tanggal Lahir";
-                        }
-                        return null;
-                      },
+                      ],
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -336,29 +352,28 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  Container(
-                    //nis and nip field
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 0.3,
-                      ),
-                      color: Color(0xFFF5F5F5),
-                    ),
-                    height: 50,
-                    width: 370,
-                    child: TextFormField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        filled: true,
-                        fillColor: Color(0xFFF5F5F5),
-                      ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Masukkan Email';
-                        }
-                        return null;
-                      },
+                  Padding(
+                    padding: const EdgeInsets.only(right: 25),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextFormField(
+                          controller: emailController,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            border: OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Color(0xFFF5F5F5),
+                          ),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Masukkan Email';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 50),

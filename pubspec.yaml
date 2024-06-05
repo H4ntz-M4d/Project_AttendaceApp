@@ -48,6 +48,7 @@ dependencies:
   styled_widget: ^0.4.1
   fluttertoast: ^8.2.5
   fl_chart: ^0.68.0
+  bloc: ^8.1.4
 
 dev_dependencies:
   flutter_test:

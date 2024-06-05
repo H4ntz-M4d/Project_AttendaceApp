@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_attendance_app/user/fragments/account_screen.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
 import 'package:project_attendance_app/user/fragments/profile_screen.dart';
 import 'package:project_attendance_app/user/userPreferences/current_user.dart';
@@ -58,7 +59,7 @@ class DashboardSiswa extends StatelessWidget {
                     icon: const Icon(Icons.assignment_turned_in_sharp),
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => DetailAbsen()));
+                          MaterialPageRoute(builder: (ctx) => AccountScreen()));
                     },
                   ),
                 ],
