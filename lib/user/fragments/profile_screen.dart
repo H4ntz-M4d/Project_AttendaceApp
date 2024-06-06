@@ -125,7 +125,8 @@ class _ProfileScreen extends State<ProfileScreen> {
             icon: const Icon(
               Icons.arrow_back,
               color: Colors.white,
-            )),
+            )
+        ),
         title: Text(
           'Profil',
           style: GoogleFonts.lato(

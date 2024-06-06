@@ -1,59 +1,65 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:project_attendance_app/user/model/event_list.dart';
 import 'package:http/http.dart' as http;
 
 class DetailAbsen extends StatefulWidget {
-  const DetailAbsen({super.key});
+  const DetailAbsen({Key? key}) : super(key: key);
 
   @override
   State<DetailAbsen> createState() => _DetailAbsenState();
 }
 
 class _DetailAbsenState extends State<DetailAbsen> {
-  DateTime today = DateTime.now();
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
   Map<DateTime, List<RecordAbsen>> event = {};
+  List<RecordAbsen> _selectedEvents = [];
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
+  final CurrentUser _currentUser = Get.put(CurrentUser());
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
-    _fetchEvents();
+    _currentUser.getUserInfo().then((_) {
+      _fetchEvents();
+    });
   }
 
   Future<void> _fetchEvents() async {
-    final String nis =
-        '001'; // NIS yang ingin diambil, sesuaikan dengan kebutuhan Anda.
-    final response = await http.get(Uri.parse(API.getRecord));
-
+    final String nis = _currentUser.user.nis;
+    final response = await http.post(Uri.parse(API.getRecord), body: {'nis': nis});
+    print("Response status: ${response.statusCode}");
+    print("Response body: ${response.body}");
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['success']) {
-        setState(() {
-          for (var event in data['events']) {
-            DateTime eventDate = DateTime.parse(event['record']);
-            if (this.event[eventDate] == null) {
-              this.event[eventDate] = [];
+      try {
+        final data = json.decode(response.body);
+        if (data['success']) {
+          setState(() {
+            event.clear();
+            for (var eventJson in data['events']) {
+              RecordAbsen recordAbsen = RecordAbsen.fromJson(eventJson);
+              DateTime eventDate = DateTime.parse(eventJson['kalender_absen']);
+              DateTime dateWithoutTime = DateTime(eventDate.year, eventDate.month, eventDate.day);
+              if (event[dateWithoutTime] == null) {
+                event[dateWithoutTime] = [];
+              }
+              event[dateWithoutTime]?.add(recordAbsen);
             }
-            this.event[eventDate]?.add(RecordAbsen.fromJson(event));
-          }
-        });
+            _selectedEvents = _getEventsForDay(_selectedDay);
+          });
+        }
+      } catch (e) {
+        print("Error parsing JSON: $e");
       }
-    } else {
-      // Handle error
     }
-  }
-
-  List<RecordAbsen> _getEventsForDay(DateTime day) {
-    return event[day] ?? [];
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
@@ -61,77 +67,151 @@ class _DetailAbsenState extends State<DetailAbsen> {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
+        _selectedEvents = _getEventsForDay(selectedDay);
       });
     }
+  }
+
+  List<RecordAbsen> _getEventsForDay(DateTime day) {
+    DateTime dateWithoutTime = DateTime(day.year, day.month, day.day);
+    final events = event[dateWithoutTime] ?? [];
+    return events;
+  }
+
+  Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
+    if (events.isEmpty) return const SizedBox();
+
+    List<Widget> markers = [];
+    for (var event in events) {
+      Color markerColor;
+      switch (event.namaKeterangan.toUpperCase()) {
+        case 'ALPHA':
+          markerColor = Colors.red;
+          break;
+        case 'HADIR':
+          markerColor = Colors.green;
+          break;
+        case 'IZIN':
+          markerColor = Colors.yellow;
+          break;
+        default:
+          markerColor = Colors.grey;
+      }
+
+      markers.add(
+        Container(
+          decoration: BoxDecoration(
+            color: markerColor,
+            shape: BoxShape.circle,
+          ),
+          width: 8.0,
+          height: 8.0,
+          margin: const EdgeInsets.symmetric(horizontal: 0.5),
+        ),
+      );
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: markers,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
+        automaticallyImplyLeading: false,
+        title: Text(
+          "Detail Absen ",
+          style: GoogleFonts.lato(
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 30,
+              color: Color.fromARGB(255, 247, 238, 221),
+            ),
           ),
         ),
-        title: Text(
-          'Detail Absen',
-          style: GoogleFonts.lato(
-              color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.blue,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              Text('Selected Day = ' + (today.toString().split(" ")[0])),
-              Container(
-                child: TableCalendar(
-                  locale: "en_US",
-                  rowHeight: 43,
-                  headerStyle: const HeaderStyle(
-                      formatButtonVisible: false, titleCentered: true),
-                  focusedDay: _focusedDay,
-                  selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-                  firstDay: DateTime.utc(2018, 01, 01),
-                  lastDay: DateTime.utc(2045, 12, 30),
-                  onDaySelected: _onDaySelected,
-                  calendarStyle: CalendarStyle(
-                    outsideDaysVisible: false,
-                  ),
-                  onFormatChanged: (format) {
-                    if (_calendarFormat != format) {
-                      setState(() {
-                        _calendarFormat = format;
-                      });
-                    }
-                  },
-                  onPageChanged: (focusedDay) {
-                    _focusedDay = focusedDay;
-                  },
-                  eventLoader: _getEventsForDay,
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              backgroundColor: Colors.white,
+              minimumSize: const Size(60, 60),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.only(
+                  topStart: Radius.zero,
+                  topEnd: Radius.zero,
+                  bottomStart: Radius.circular(20),
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
-              ..._getEventsForDay(_selectedDay!)
-                  .map((RecordAbsen event) => ListTile(
-                        title: Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                border: Border.all(),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(event.namaKeterangan)),
-                      )),
-            ],
+            ),
+            child: const Center(
+              child: Icon(Icons.arrow_back),
+            ),
           ),
+        ],
+        backgroundColor: const Color.fromARGB(255, 0, 141, 218),
+      ),
+      backgroundColor: const Color.fromARGB(255, 0, 141, 218),
+      body: Center(
+        child: Column(
+          children: [
+            // Calendar Control
+            const SizedBox(height: 10),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.8, // 80% of the screen width
+              height: 400,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black,
+                    blurRadius: 10,
+                    offset: Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: TableCalendar(
+                focusedDay: _focusedDay,
+                firstDay: DateTime(_focusedDay.year - 10),
+                lastDay: DateTime(_focusedDay.year + 10),
+                selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+                onDaySelected: _onDaySelected,
+                onPageChanged: (focusedDay) {
+                  setState(() {
+                    _focusedDay = focusedDay;
+                  });
+                },
+                eventLoader: _getEventsForDay,
+                calendarStyle: const CalendarStyle(
+                  outsideDaysVisible: false,
+                  selectedDecoration: BoxDecoration(
+                    color: Color.fromARGB(255, 0, 141, 218),
+                    shape: BoxShape.circle,
+                  ),
+                  selectedTextStyle: TextStyle(color: Colors.white),
+                  defaultTextStyle: TextStyle(color: Colors.black),
+                  todayTextStyle: TextStyle(color: Colors.black),
+                ),
+                calendarBuilders: CalendarBuilders(
+                  markerBuilder: (context, date, events) {
+                    return _buildEventsMarker(date, events);
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 20.0),
+
+            // Event Control
+            Expanded(
+              child: EventsList(events: _selectedEvents),
+            ),
+          ],
         ),
       ),
     );
