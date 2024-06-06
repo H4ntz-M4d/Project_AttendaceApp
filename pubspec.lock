@@ -18,7 +18,6 @@ packages:
     source: hosted
     version: "2.11.0"
   bloc:
-    dependency: transitive
     dependency: "direct main"
     description:
       name: bloc
