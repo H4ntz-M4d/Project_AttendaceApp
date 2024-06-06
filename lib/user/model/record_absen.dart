@@ -1,35 +1,33 @@
 class RecordAbsen {
-  String idAbsensi;
+  String id_absen;
   String nis;
-  DateTime kalenderAbsensi;
-  String kodeKeterangan;
+  DateTime record;
+  String kd_ket;
+  String namaKeterangan;
 
   RecordAbsen({
-    required this.idAbsensi,
+    required this.id_absen,
     required this.nis,
-    required this.kalenderAbsensi,
-    required this.kodeKeterangan,
+    required this.record,
+    required this.kd_ket,
+    required this.namaKeterangan,
   });
 
   factory RecordAbsen.fromJson(Map<String, dynamic> json) {
     return RecordAbsen(
-      idAbsensi: json['id_absensi'].toString(),
+      id_absen: json['id_absen'],
       nis: json['nis'],
-      kalenderAbsensi: DateTime.parse(json['kalender_absensi']),
-      kodeKeterangan: json['kode_keterangan'],
+      record: DateTime.parse(json['kalender_absen']),
+      kd_ket: json['kode_keterangan'],
+      namaKeterangan: json['nama_keterangan'],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id_absensi': idAbsensi,
-      'nis': nis,
-      'kalender_absensi': kalenderAbsensi.toIso8601String(),
-      'kode_keterangan': kodeKeterangan,
-    };
-  }
-
-  String get _nis => nis;
-  DateTime get _kalenderAbsensi => kalenderAbsensi;
-  String get _kodeKeterangan => kodeKeterangan;
+  Map<String, dynamic> toJson() => {
+        'id_absen': id_absen,
+        'nis': nis,
+        'kalender_absen': record.toIso8601String(),
+        'kode_keterangan': kd_ket,
+        'nama_keterangan': namaKeterangan,
+  };
 }
