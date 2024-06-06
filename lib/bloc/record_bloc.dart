@@ -25,7 +25,7 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
         List<RecordAbsen> record =
             await RememberRecordPrefs.getRememberAbsensi();
         List<RecordAbsen> filteredRecord = record.where((record) {
-          return record.kodeKeterangan == event.filter;
+          return record.kd_ket == event.filter;
         }).toList();
         emit(RecordLoaded(filteredRecord));
       } catch (e) {
