@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
           FutureBuilder(
         future: RememberUserPrefs.readUserInfo(),
         builder: (context, dataSnapshot) {
-          print(dataSnapshot.data);
           if (dataSnapshot.data == null) {
             return const SplashScreen();
           } else {
