@@ -24,7 +24,7 @@ class _BarChart extends StatelessWidget {
               'Error: ${snapshot.error}'); // Tampilkan pesan error jika ada
         } else {
           for (var record in snapshot.data!) {
-            switch (record.kodeKeterangan) {
+            switch (record.kd_ket) {
               case 'HD':
                 hadir++;
                 break;

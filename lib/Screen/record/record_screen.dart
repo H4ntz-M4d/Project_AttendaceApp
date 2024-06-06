@@ -428,7 +428,7 @@ class _UserCardState extends State<UserCard> {
     int alpha = 0;
 
     for (var record in histories) {
-      switch (record.kodeKeterangan) {
+      switch (record.kd_ket) {
         case 'HD':
           hadir++;
           break;
@@ -606,34 +606,34 @@ class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<SettingsItemModel> setItem = histories.map((history) {
-      switch (history.kodeKeterangan) {
+      switch (history.kd_ket) {
         case 'HD':
           return SettingsItemModel(
             icon: Icons.co_present,
             color: Color(0xff8D7AEE),
             title: 'Hadir',
-            description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
+            description: 'Tanggal: ' + history.record.toString(),
           );
         case 'SK':
           return SettingsItemModel(
             icon: Icons.sick,
             color: Color(0xffF468B7),
             title: 'Sakit',
-            description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
+            description: 'Tanggal: ' + history.record.toString(),
           );
         case 'ZN':
           return SettingsItemModel(
             icon: Icons.receipt,
             color: Color(0xffFEC85C),
             title: 'Izin',
-            description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
+            description: 'Tanggal: ' + history.record.toString(),
           );
         case 'PH':
           return SettingsItemModel(
             icon: Icons.close,
             color: Color(0xff5FD0D3),
             title: 'Alpha',
-            description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
+            description: 'Tanggal: ' + history.record.toString(),
           );
 
         default:
@@ -641,7 +641,7 @@ class Settings extends StatelessWidget {
             icon: Icons.co_present,
             color: Color(0xff8D7AEE),
             title: 'Hadir',
-            description: 'Tanggal: ' + history.kalenderAbsensi.toString(),
+            description: 'Tanggal: ' + history.record.toString(),
           );
       }
     }).toList();
