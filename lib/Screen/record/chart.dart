@@ -1,246 +1,234 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
-import 'package:styled_widget/styled_widget.dart';
 
-// ignore: must_be_immutable
-class _BarChart extends StatelessWidget {
+class PieChartSample3 extends StatefulWidget {
+  const PieChartSample3({super.key});
+
+  @override
+  State<StatefulWidget> createState() => PieChartSample3State();
+}
+
+class PieChartSample3State extends State<PieChartSample3> {
+  int touchedIndex =
+      -1; // Diinisialisasi ke -1 untuk tidak menyentuh bagian manapun saat pertama kali
   int hadir = 0;
   int sakit = 0;
   int izin = 0;
   int alpha = 0;
+  bool isLoading = true;
+  String? error;
 
-  _BarChart();
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final records = await RememberRecordPrefs.getRememberAbsensi();
+      int newHadir = 0;
+      int newSakit = 0;
+      int newIzin = 0;
+      int newAlpha = 0;
+
+      for (var record in records) {
+        switch (record.namaKeterangan) {
+          case 'Hadir':
+            newHadir++;
+            break;
+          case 'Sakit':
+            newSakit++;
+            break;
+          case 'Izin':
+            newIzin++;
+            break;
+          case 'Alpha':
+            newAlpha++;
+            break;
+        }
+      }
+
+      setState(() {
+        hadir = newHadir;
+        sakit = newSakit;
+        izin = newIzin;
+        alpha = newAlpha;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: RememberRecordPrefs.getRememberAbsensi(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Tampilkan spinner saat menunggu data
-        } else if (snapshot.hasError) {
-          return Text(
-              'Error: ${snapshot.error}'); // Tampilkan pesan error jika ada
-        } else {
-          for (var record in snapshot.data!) {
-            switch (record.kd_ket) {
-              case 'HD':
-                hadir++;
-                break;
-              case 'SK':
-                sakit++;
-                break;
-              case 'ZN':
-                izin++;
-                break;
-              case 'PH':
-                alpha++;
-                break;
-            }
-          }
-          return BarChart(
-            BarChartData(
-              barTouchData: barTouchData,
-              titlesData: titlesData,
-              borderData: borderData,
-              barGroups: barGroups,
-              gridData: const FlGridData(show: false),
-              alignment: BarChartAlignment.spaceAround,
-              maxY: 7,
+    if (isLoading) {
+      return CircularProgressIndicator();
+    } else if (error != null) {
+      return Text('Error: $error');
+    } else {
+      return AspectRatio(
+        aspectRatio: 1.3,
+        child: PieChart(
+          PieChartData(
+            pieTouchData: PieTouchData(
+              touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                setState(() {
+                  if (!event.isInterestedForInteractions ||
+                      pieTouchResponse == null ||
+                      pieTouchResponse.touchedSection == null) {
+                    touchedIndex = -1;
+                    return;
+                  }
+                  touchedIndex =
+                      pieTouchResponse.touchedSection!.touchedSectionIndex;
+                });
+              },
             ),
-          ); // Tampilkan data setelah selesai
-        }
-      },
-    );
-  }
-
-  BarTouchData get barTouchData => BarTouchData(
-        enabled: true,
-        touchTooltipData: BarTouchTooltipData(
-          tooltipPadding: EdgeInsets.zero,
-          tooltipMargin: 8,
-          getTooltipColor: (group) => Colors.transparent,
-          getTooltipItem: (
-            BarChartGroupData group,
-            int groupIndex,
-            BarChartRodData rod,
-            int rodIndex,
-          ) {
-            // Daftar warna untuk tooltips
-            List<Color> tooltipColors = [
-              Colors.purple,
-              Colors.pink,
-              Colors.orange,
-              Colors.blue
-            ];
-
-            // Ambil warna berdasarkan indeks
-            Color tooltipColor =
-                tooltipColors[groupIndex % tooltipColors.length];
-
-            return BarTooltipItem(
-              rod.toY.round().toString(),
-              TextStyle(
-                color: tooltipColor,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          },
-        ),
-      );
-
-  Widget getTitles(double value, TitleMeta meta) {
-    String text;
-    Color color;
-    switch (value.toInt()) {
-      case 0:
-        text = 'Hadir';
-        color = Colors.purple.shade900;
-        break;
-      case 1:
-        text = 'Sakit';
-        color = Colors.red.shade900;
-        break;
-      case 2:
-        text = 'Izin';
-        color = Colors.orange.shade900;
-        break;
-      case 3:
-        text = 'Alpha';
-        color = Colors.blue.shade900;
-        break;
-      default:
-        text = '';
-        color = Colors.blue.shade900;
-        break;
-    }
-    final style = TextStyle(
-      color: color,
-      fontWeight: FontWeight.bold,
-      fontSize: 14,
-    );
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 4,
-      child: Text(text, style: style),
-    );
-  }
-
-  FlTitlesData get titlesData => FlTitlesData(
-        show: true,
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            getTitlesWidget: getTitles,
+            borderData: FlBorderData(
+              show: false,
+            ),
+            sectionsSpace: 0,
+            centerSpaceRadius: 0,
+            sections: showingSections(),
           ),
         ),
-        leftTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
       );
+    }
+  }
 
-  FlBorderData get borderData => FlBorderData(
-        show: false,
-      );
+  List<PieChartSectionData> showingSections() {
+    return List.generate(4, (i) {
+      final isTouched = i == touchedIndex;
+      final fontSize = isTouched ? 20.0 : 16.0;
+      final radius = isTouched ? 110.0 : 100.0;
+      final widgetSize = isTouched ? 55.0 : 40.0;
+      const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
 
-  LinearGradient get _barsGradient => LinearGradient(
-        colors: [
-          Colors.purple.shade900,
-          Colors.purple.shade200,
-        ],
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
-  LinearGradient get _barsGradient2 => LinearGradient(
-        colors: [
-          Colors.pink.shade900,
-          Colors.red.shade200,
-        ],
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
-  LinearGradient get _barsGradient3 => LinearGradient(
-        colors: [
-          Colors.orange.shade900,
-          Colors.orange.shade200,
-        ],
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
-  LinearGradient get _barsGradient4 => LinearGradient(
-        colors: [
-          Colors.blue.shade900,
-          Colors.blue.shade200,
-        ],
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
-
-  List<BarChartGroupData> get barGroups => [
-        BarChartGroupData(
-          x: 0,
-          barRods: [
-            BarChartRodData(
-              toY: hadir.toDouble(),
-              gradient: _barsGradient,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 1,
-          barRods: [
-            BarChartRodData(
-              toY: sakit.toDouble(),
-              gradient: _barsGradient2,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 2,
-          barRods: [
-            BarChartRodData(
-              toY: izin.toDouble(),
-              gradient: _barsGradient3,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 3,
-          barRods: [
-            BarChartRodData(
-              toY: alpha.toDouble(),
-              gradient: _barsGradient4,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-      ];
+      switch (i) {
+        case 0:
+          return PieChartSectionData(
+            color: Color(0xff5FD0D3),
+            value: hadir.toDouble(),
+            title: hadir.toString(),
+            radius: radius,
+            titleStyle: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xffffffff),
+              shadows: shadows,
+            ),
+            badgeWidget: _Badge(
+              Icons.co_present,
+              size: widgetSize,
+              borderColor: Colors.black,
+            ),
+            badgePositionPercentageOffset: .98,
+          );
+        case 1:
+          return PieChartSectionData(
+            color: Color(0xff8D7AEE),
+            value: sakit.toDouble(),
+            title: sakit.toString(),
+            radius: radius,
+            titleStyle: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xffffffff),
+              shadows: shadows,
+            ),
+            badgeWidget: _Badge(
+              Icons.sick,
+              size: widgetSize,
+              borderColor: Colors.black,
+            ),
+            badgePositionPercentageOffset: .98,
+          );
+        case 2:
+          return PieChartSectionData(
+            color: Color(0xffFEC85C),
+            value: izin.toDouble(),
+            title: izin.toString(),
+            radius: radius,
+            titleStyle: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xffffffff),
+              shadows: shadows,
+            ),
+            badgeWidget: _Badge(
+              Icons.receipt,
+              size: widgetSize,
+              borderColor: Colors.black,
+            ),
+            badgePositionPercentageOffset: .98,
+          );
+        case 3:
+          return PieChartSectionData(
+            color: Color(0xffF468B7),
+            value: alpha.toDouble(),
+            title: alpha.toString(),
+            radius: radius,
+            titleStyle: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xffffffff),
+              shadows: shadows,
+            ),
+            badgeWidget: _Badge(
+              Icons.close,
+              size: widgetSize,
+              borderColor: Colors.black,
+            ),
+            badgePositionPercentageOffset: .98,
+          );
+        default:
+          throw Exception('Oh no');
+      }
+    });
+  }
 }
 
-class BarChartRecord extends StatefulWidget {
-  const BarChartRecord({super.key});
+class _Badge extends StatelessWidget {
+  const _Badge(
+    this.icon, {
+    required this.size,
+    required this.borderColor,
+  });
+  final IconData icon;
+  final double size;
+  final Color borderColor;
 
-  @override
-  State<StatefulWidget> createState() => BarChartRecordState();
-}
-
-class BarChartRecordState extends State<BarChartRecord> {
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.6,
-      child: _BarChart(),
+    return AnimatedContainer(
+      duration: PieChart.defaultDuration,
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: borderColor,
+          width: 2,
+        ),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withOpacity(.5),
+            offset: const Offset(3, 3),
+            blurRadius: 3,
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(size * .15),
+      child: Center(
+        child: Icon(icon),
+      ),
     );
   }
 }

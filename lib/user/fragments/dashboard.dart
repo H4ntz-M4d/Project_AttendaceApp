@@ -10,12 +10,14 @@ import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 class DashboardSiswa extends StatelessWidget {
   final CurrentUser _rememberCurrentUser = Get.put(CurrentUser());
 
+  DashboardSiswa({super.key});
+
   Future<bool> _onWillPop(BuildContext context) async {
     return await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Konfirmasi'),
-            content: Text('Apakah Anda ingin meninggalkan aplikasi?'),
+            title: const Text('Konfirmasi'),
+            content: const Text('Apakah Anda ingin meninggalkan aplikasi?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -43,7 +45,7 @@ class DashboardSiswa extends StatelessWidget {
           onWillPop: () => _onWillPop(context),
           child: Scaffold(
             appBar: AppBar(
-              title: Text("Dashboard"),
+              title: const Text("Dashboard"),
             ),
             body: Center(
               child: Row(
@@ -52,14 +54,14 @@ class DashboardSiswa extends StatelessWidget {
                     icon: const Icon(Icons.people),
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => ProfileScreen()));
+                          MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.assignment_turned_in_sharp),
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => AccountScreen()));
+                          MaterialPageRoute(builder: (ctx) => const AccountScreen()));
                     },
                   ),
                 ],

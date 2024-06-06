@@ -37,7 +37,8 @@ class _DetailAbsenState extends State<DetailAbsen> {
 
   Future<void> _fetchEvents() async {
     final String nis = _currentUser.user.nis;
-    final response = await http.post(Uri.parse(API.getRecord), body: {'nis': nis});
+    final response =
+        await http.post(Uri.parse(API.getRecord), body: {'nis': nis});
     print("Response status: ${response.statusCode}");
     print("Response body: ${response.body}");
     if (response.statusCode == 200) {
@@ -48,8 +49,10 @@ class _DetailAbsenState extends State<DetailAbsen> {
             event.clear();
             for (var eventJson in data['events']) {
               RecordAbsen recordAbsen = RecordAbsen.fromJson(eventJson);
-              DateTime eventDate = DateTime.parse(eventJson['kalender_absen']);
-              DateTime dateWithoutTime = DateTime(eventDate.year, eventDate.month, eventDate.day);
+              DateTime eventDate =
+                  DateTime.parse(eventJson['kalender_absensi']);
+              DateTime dateWithoutTime =
+                  DateTime(eventDate.year, eventDate.month, eventDate.day);
               if (event[dateWithoutTime] == null) {
                 event[dateWithoutTime] = [];
               }
@@ -63,7 +66,7 @@ class _DetailAbsenState extends State<DetailAbsen> {
       }
     }
   }
-  
+
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
@@ -165,7 +168,8 @@ class _DetailAbsenState extends State<DetailAbsen> {
             // Calendar Control
             const SizedBox(height: 10),
             Container(
-              width: MediaQuery.of(context).size.width * 0.8, // 80% of the screen width
+              width: MediaQuery.of(context).size.width *
+                  0.8, // 80% of the screen width
               height: 400,
               decoration: BoxDecoration(
                 color: Colors.white,
