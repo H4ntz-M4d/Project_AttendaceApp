@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
 import 'package:project_attendance_app/bloc/record_bloc/record_bloc.dart';
 import 'package:project_attendance_app/bloc/theme_bloc/app_colors.dart';
+import 'package:project_attendance_app/bloc/theme_bloc/theme_bloc.dart';
 import 'package:project_attendance_app/coba.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
@@ -236,10 +237,14 @@ class _RecordPageState extends State<RecordPage> {
             key: _key,
             appBar: isSmallScreen
                 ? AppBar(
-                    backgroundColor: canvasColor,
+                    backgroundColor: Theme.of(context)
+                        .appBarTheme
+                        .backgroundColor, // Use theme here
                     title: Text(
                       _getTitleByIndex(_controller.selectedIndex),
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor, // Use theme here
+                      ),
                     ),
                     leading: Padding(
                       padding: const EdgeInsets.only(left: 20),
@@ -247,9 +252,10 @@ class _RecordPageState extends State<RecordPage> {
                         onPressed: () {
                           _key.currentState?.openDrawer();
                         },
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.menu,
-                          color: Colors.white,
+                          color:
+                              Theme.of(context).primaryColor, // Use theme here
                         ),
                       ),
                     ),
@@ -257,6 +263,14 @@ class _RecordPageState extends State<RecordPage> {
                 : null,
             drawer: DrawerNavigation(),
             body: UserPage(),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                // Dispatch the ToggleThemeEvent when the button is pressed
+                context.read<ThemeBloc>().add(ToggleThemeEvent());
+              },
+              child: Icon(Icons.brightness_medium),
+              backgroundColor: Theme.of(context).primaryColor, // Use theme here
+            ),
           );
         },
       ),
@@ -357,7 +371,8 @@ class _UserPageState extends State<UserPage> {
                         return Center(child: Text('Error: ${state.message}'));
                       } else if (state is RecordLoaded) {
                         return Scaffold(
-                          backgroundColor: AppColors.pageBackground,
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
                           body: <Widget>[
                             UserCard(
                               user: user,

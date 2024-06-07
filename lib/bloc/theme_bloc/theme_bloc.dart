@@ -13,14 +13,23 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   static final ThemeData _lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: Colors.white,
+    scaffoldBackgroundColor: const Color(0xfff8f8ff),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xff3977ff),
+      foregroundColor: Colors.white,
+    ),
     // Define other light theme properties here
   );
 
   static final ThemeData _darkTheme = ThemeData(
     brightness: Brightness.dark,
     primaryColor: Colors.black,
+    scaffoldBackgroundColor: const Color(0xff121212),
     // Define other dark theme properties here
   );
+
+  static ThemeData get lightTheme => _lightTheme;
+  static ThemeData get darkTheme => _darkTheme;
 
   void _onToggleTheme(ToggleThemeEvent event, Emitter<ThemeState> emit) {
     final isCurrentlyDark = state is ThemeChanged &&

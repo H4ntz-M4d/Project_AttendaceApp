@@ -2,11 +2,11 @@
 part of 'theme_bloc.dart';
 
 @immutable
-sealed class ThemeState {}
+abstract class ThemeState {}
 
-final class ThemeInitial extends ThemeState {}
+class ThemeInitial extends ThemeState {}
 
-final class ThemeChanged extends ThemeState {
+class ThemeChanged extends ThemeState {
   final ThemeData themeData;
 
   ThemeChanged(this.themeData);

@@ -24,14 +24,14 @@ class MyApp extends StatelessWidget {
     return BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, state) {
         ThemeData themeData;
-        if (state is ThemeInitial) {
-          themeData = ThemeBloc._lightTheme;
-        } else if (state is ThemeChanged) {
-          themeData = (state as ThemeChanged).themeData;
+        if (state is ThemeChanged) {
+          themeData = state.themeData;
         } else {
-          themeData = ThemeBloc._lightTheme;
+          // Default theme when state is not ThemeChanged
+          themeData = ThemeBloc.lightTheme; // or any other default theme
         }
         return GetMaterialApp(
+          theme: themeData,
           title: 'Attendance App',
           debugShowCheckedModeBanner: false,
           home: FutureBuilder(
