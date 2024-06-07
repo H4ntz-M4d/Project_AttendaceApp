@@ -31,7 +31,7 @@ class _DetailAbsenState extends State<DetailAbsen> {
     super.initState();
     _selectedDay = _focusedDay;
     _currentUser.getUserInfo().then((_) {
-      _fetchEvents();
+    _fetchEvents();
     });
   }
 
@@ -49,10 +49,9 @@ class _DetailAbsenState extends State<DetailAbsen> {
             event.clear();
             for (var eventJson in data['events']) {
               RecordAbsen recordAbsen = RecordAbsen.fromJson(eventJson);
-              DateTime eventDate =
-                  DateTime.parse(eventJson['kalender_absensi']);
-              DateTime dateWithoutTime =
-                  DateTime(eventDate.year, eventDate.month, eventDate.day);
+              DateTime eventDate = DateTime.parse(eventJson['kalender_absensi']);
+              DateTime dateWithoutTime = DateTime(eventDate.year, eventDate.month, eventDate.day);
+
               if (event[dateWithoutTime] == null) {
                 event[dateWithoutTime] = [];
               }
@@ -83,42 +82,21 @@ class _DetailAbsenState extends State<DetailAbsen> {
     return events;
   }
 
-  Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
+    Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
     if (events.isEmpty) return const SizedBox();
 
-    List<Widget> markers = [];
-    for (var event in events) {
-      Color markerColor;
-      switch (event.namaKeterangan.toUpperCase()) {
-        case 'ALPHA':
-          markerColor = Colors.red;
-          break;
-        case 'HADIR':
-          markerColor = Colors.green;
-          break;
-        case 'IZIN':
-          markerColor = Colors.yellow;
-          break;
-        default:
-          markerColor = Colors.grey;
-      }
-
-      markers.add(
-        Container(
-          decoration: BoxDecoration(
-            color: markerColor,
-            shape: BoxShape.circle,
-          ),
-          width: 8.0,
-          height: 8.0,
-          margin: const EdgeInsets.symmetric(horizontal: 0.5),
+    // Display a single marker for dates with events
+    return Center(
+      child: Container(
+        alignment: Alignment.bottomCenter,
+        decoration: BoxDecoration(
+          color: Colors.blue, // Choose a default color for the marker
+          shape: BoxShape.circle,
         ),
-      );
-    }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: markers,
+        width: 8.0,
+        height: 8.0,
+        margin: const EdgeInsets.symmetric(horizontal: 0.5),
+      ),
     );
   }
 

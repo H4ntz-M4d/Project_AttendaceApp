@@ -15,10 +15,10 @@ class RecordAbsen {
 
   factory RecordAbsen.fromJson(Map<String, dynamic> json) {
     return RecordAbsen(
-      id_absen: json['id_absensi'],
-      nis: json['nis'],
+      id_absen: json['id_absensi'].toString() ?? '',
+      nis: json['nis'] ?? '',
       record: DateTime.parse(json['kalender_absensi']),
-      kd_ket: json['kode_keterangan'],
+      kd_ket: json['kode_keterangan'] ?? '',
       namaKeterangan: json['nama_keterangan'] ?? '',
     );
   }
