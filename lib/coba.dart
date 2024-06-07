@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
 import 'package:project_attendance_app/Screen/record/record_screen.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
+import 'package:project_attendance_app/user/fragments/account_screen.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
@@ -21,7 +22,7 @@ class DrawerNavigation extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
+          const DrawerHeader(
             decoration: BoxDecoration(
               color: Color(0xff3977ff),
             ),
@@ -44,7 +45,7 @@ class DrawerNavigation extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.send),
+            leading: Icon(Icons.auto_graph_outlined),
             title: Text('Grafik Absensi'),
             onTap: () {
               Navigator.pop(context);
@@ -66,6 +67,10 @@ class DrawerNavigation extends StatelessWidget {
             leading: Icon(Icons.account_circle_rounded),
             title: Text('Akun'),
             onTap: () {
+              Navigator.pop(context);
+              Future.delayed(const Duration(milliseconds: 500), () {
+                Get.to(() => const AccountScreen());
+              });
               // Add your logic here to navigate to Settings page
             },
           ),
