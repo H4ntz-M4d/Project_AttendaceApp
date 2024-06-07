@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_attendance_app/Screen/record/record_screen.dart';
 import 'package:project_attendance_app/user/authentication/forgot_password.dart';
-import 'package:project_attendance_app/user/fragments/dashboard.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
@@ -141,10 +140,10 @@ class _LoginPage extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               margin: const EdgeInsets.only(top: 300),
               height: MediaQuery.of(context).size.height / 1.53,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                boxShadow: [
                   BoxShadow(
                     color: Colors.black26,
                     blurRadius: 10,
