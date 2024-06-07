@@ -25,16 +25,16 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
         final isSmallScreen = MediaQuery.of(context).size.width < 600;
         return Scaffold(
           appBar: AppBar(
-            title: Text('Detail Absensi'),
+            title: Text('Grafik Absensi'),
           ),
           drawer: DrawerNavigation(),
           body: <Widget>[
             const <Widget>[
               Text(
-                'Record',
+                'Grafik Record',
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 32,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                 ),
@@ -58,10 +58,10 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
             ),
             const <Widget>[
               Text(
-                'Record',
+                'Grafik Record',
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 32,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                 ),
