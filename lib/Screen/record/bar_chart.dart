@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:project_attendance_app/bloc/theme_bloc/app_colors.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
 
 // ignore: must_be_immutable
@@ -68,10 +69,10 @@ class _BarChart extends StatelessWidget {
           ) {
             // Daftar warna untuk tooltips
             List<Color> tooltipColors = [
+              Colors.blue,
               Colors.purple,
-              Colors.pink,
               Colors.orange,
-              Colors.blue
+              Colors.pink,
             ];
 
             // Ambil warna berdasarkan indeks
@@ -95,11 +96,11 @@ class _BarChart extends StatelessWidget {
     switch (value.toInt()) {
       case 0:
         text = 'Hadir';
-        color = Colors.purple.shade900;
+        color = AppColors.contentColorDarkBlue;
         break;
       case 1:
         text = 'Sakit';
-        color = Colors.red.shade900;
+        color = Colors.purple.shade900;
         break;
       case 2:
         text = 'Izin';
@@ -107,7 +108,7 @@ class _BarChart extends StatelessWidget {
         break;
       case 3:
         text = 'Alpha';
-        color = Colors.blue.shade900;
+        color = Colors.red.shade900;
         break;
       default:
         text = '';

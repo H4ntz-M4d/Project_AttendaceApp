@@ -3,7 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
-import 'package:project_attendance_app/bloc/record_bloc.dart';
+import 'package:project_attendance_app/bloc/record_bloc/record_bloc.dart';
+import 'package:project_attendance_app/bloc/theme_bloc/app_colors.dart';
 import 'package:project_attendance_app/coba.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
@@ -355,17 +356,20 @@ class _UserPageState extends State<UserPage> {
                       } else if (state is RecordError) {
                         return Center(child: Text('Error: ${state.message}'));
                       } else if (state is RecordLoaded) {
-                        return <Widget>[
-                          UserCard(
-                            user: user,
-                            histories: absensiToCard,
-                          ),
-                          ActionsRow(
-                            onActionSelected: (actionName) =>
-                                handleActionSelected(context, actionName),
-                          ),
-                          Settings(histories: state.record),
-                        ].toColumn().parent(page);
+                        return Scaffold(
+                          backgroundColor: AppColors.pageBackground,
+                          body: <Widget>[
+                            UserCard(
+                              user: user,
+                              histories: absensiToCard,
+                            ),
+                            ActionsRow(
+                              onActionSelected: (actionName) =>
+                                  handleActionSelected(context, actionName),
+                            ),
+                            Settings(histories: state.record),
+                          ].toColumn().parent(page),
+                        );
                       } else {
                         return const Center(child: CircularProgressIndicator());
                       }

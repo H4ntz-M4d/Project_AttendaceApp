@@ -92,7 +92,7 @@ class _LoginPage extends State<LoginPage> {
               right: 0.0,
               bottom: 0.0,
               child: Container(
-                color: Colors.blue, // Set background color to blue
+                color: const Color(0xff3977ff), // Set background color to blue
               ),
             ),
             Positioned(
@@ -287,7 +287,7 @@ class _LoginPage extends State<LoginPage> {
                         onPressed: loginUserNow,
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(150, 50),
-                          backgroundColor: Colors.blue,
+                          backgroundColor: const Color(0xff3977ff),
                         ),
                         child: const Text(
                           'Sign In',
