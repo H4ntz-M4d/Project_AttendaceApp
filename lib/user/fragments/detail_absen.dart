@@ -86,18 +86,16 @@ class _DetailAbsenState extends State<DetailAbsen> {
     if (events.isEmpty) return const SizedBox();
 
     // Display a single marker for dates with events
-    return Center(
-      child: Container(
+    return Container(
         alignment: Alignment.bottomCenter,
         decoration: BoxDecoration(
-          color: Colors.blue, // Choose a default color for the marker
+          color: Colors.blueGrey, // Choose a default color for the marker
           shape: BoxShape.circle,
         ),
         width: 8.0,
         height: 8.0,
         margin: const EdgeInsets.symmetric(horizontal: 0.5),
-      ),
-    );
+      );
   }
 
   @override
