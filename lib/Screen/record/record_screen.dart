@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
 import 'package:project_attendance_app/bloc/record_bloc.dart';
+import 'package:project_attendance_app/coba.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
 import 'package:project_attendance_app/user/fragments/profile_screen.dart';
@@ -80,8 +81,8 @@ class ExampleSidebarX extends StatelessWidget {
       ),
       headerDivider: divider,
       headerBuilder: (context, extended) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 33),
+        return const Padding(
+          padding: EdgeInsets.only(top: 33),
           child: Text(
             "Absen Aja!",
             style: TextStyle(
@@ -92,14 +93,19 @@ class ExampleSidebarX extends StatelessWidget {
       items: [
         SidebarXItem(
           icon: Icons.security,
-          label: 'Akun',
+          label: 'Home',
           onTap: () {
             debugPrint('Home');
+            _controller.setExtended(false);
           },
         ),
-        const SidebarXItem(
+        SidebarXItem(
           icon: Icons.nightlight,
-          label: 'Tema',
+          label: 'Detail Absen',
+          onTap: () {
+            debugPrint('Home');
+            _controller.setExtended(false);
+          },
         ),
         const SidebarXItem(
           icon: Icons.info,
@@ -113,7 +119,7 @@ class ExampleSidebarX extends StatelessWidget {
       ],
       footerDivider: divider,
       footerBuilder: ((context, extended) {
-        return Text(
+        return const Text(
           "Created By: Militan",
           style: TextStyle(
             color: Colors.white,
@@ -144,7 +150,6 @@ class _ScreensExample extends StatelessWidget {
             return const UserPage();
           case 1:
             return const RecordDetailPage();
-            return UserPage();
           default:
             return Text(
               pageTitle,
@@ -202,8 +207,8 @@ class _RecordPageState extends State<RecordPage> {
     return await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Konfirmasi'),
-            content: Text('Apakah Anda ingin meninggalkan aplikasi?'),
+            title: const Text('Konfirmasi'),
+            content: const Text('Apakah Anda ingin meninggalkan aplikasi?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -233,7 +238,7 @@ class _RecordPageState extends State<RecordPage> {
                     backgroundColor: canvasColor,
                     title: Text(
                       _getTitleByIndex(_controller.selectedIndex),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                     leading: Padding(
                       padding: const EdgeInsets.only(left: 20),
@@ -249,19 +254,8 @@ class _RecordPageState extends State<RecordPage> {
                     ),
                   )
                 : null,
-            drawer: ExampleSidebarX(controller: _controller),
-            body: Row(
-              children: [
-                if (!isSmallScreen) ExampleSidebarX(controller: _controller),
-                Expanded(
-                  child: Center(
-                    child: _ScreensExample(
-                      controller: _controller,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            drawer: DrawerNavigation(),
+            body: UserPage(),
           );
         },
       ),
@@ -328,6 +322,7 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: prefer_function_declarations_over_variables
     final page = ({required Widget child}) => Styled.widget(child: child)
         .padding(vertical: 30, horizontal: 20)
         .constrained(minHeight: MediaQuery.of(context).size.height - (2 * 30))
@@ -343,11 +338,11 @@ class _UserPageState extends State<UserPage> {
             future: getUserAndAbsensi(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData) {
-                return Center(child: Text('No data available'));
+                return const Center(child: Text('No data available'));
               } else {
                 Siswa user = snapshot.data!['user'];
                 List<RecordAbsen> absensiToCard = snapshot.data!['absensi'];
@@ -356,7 +351,7 @@ class _UserPageState extends State<UserPage> {
                   child: BlocBuilder<RecordBloc, RecordState>(
                     builder: (context, state) {
                       if (state is RecordLoading) {
-                        return Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       } else if (state is RecordError) {
                         return Center(child: Text('Error: ${state.message}'));
                       } else if (state is RecordLoaded) {
@@ -369,11 +364,10 @@ class _UserPageState extends State<UserPage> {
                             onActionSelected: (actionName) =>
                                 handleActionSelected(context, actionName),
                           ),
-                          Settings(histories: (state.record)),
                           Settings(histories: state.record),
                         ].toColumn().parent(page);
                       } else {
-                        return Center(child: Text('No data available'));
+                        return const Center(child: CircularProgressIndicator());
                       }
                     },
                   ),
@@ -397,14 +391,19 @@ class UserCard extends StatefulWidget {
 class _UserCardState extends State<UserCard> {
   Widget _buildUserRow(Siswa user) {
     return <Widget>[
-      const CircleAvatar(
-        radius: 25,
-        backgroundImage: AssetImage('images/art.png'),
-      ).padding(top: 5, right: 10),
+      GestureDetector(
+        onTap: () {
+          Get.to(() => const ProfileScreen());
+        },
+        child: const CircleAvatar(
+          radius: 25,
+          backgroundImage: AssetImage('images/art.png'),
+        ).padding(top: 5, right: 10),
+      ),
       <Widget>[
         Text(
           user.nis,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -466,7 +465,7 @@ class _UserCardState extends State<UserCard> {
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (ctx) => const DetailAbsen()));
           },
-          child: Text("Lihat Detail >>"),
+          child: const Text("Lihat Detail >>"),
           style: ElevatedButton.styleFrom(side: BorderSide.none)),
     ].toRow(mainAxisAlignment: MainAxisAlignment.center);
   }
@@ -481,10 +480,11 @@ class _UserCardState extends State<UserCard> {
         .toColumn(mainAxisAlignment: MainAxisAlignment.spaceAround)
         .padding(horizontal: 20, vertical: 10)
         .decorated(
-            color: Color(0xff3977ff), borderRadius: BorderRadius.circular(20))
+            color: const Color(0xff3977ff),
+            borderRadius: BorderRadius.circular(20))
         .elevation(
           5,
-          shadowColor: Color(0xff3977ff),
+          shadowColor: const Color(0xff3977ff),
           borderRadius: BorderRadius.circular(20),
         )
         .alignment(Alignment.center);
@@ -514,11 +514,11 @@ class ActionsRow extends StatelessWidget {
             break;
         }
       },
-      child: Icon(icon, size: 20, color: Color(0xFF42526F))
+      child: Icon(icon, size: 20, color: const Color(0xFF42526F))
           .alignment(Alignment.center)
           .ripple()
           .constrained(width: 50, height: 50)
-          .backgroundColor(Color(0xfff6f5f8))
+          .backgroundColor(const Color(0xfff6f5f8))
           .clipOval()
           .padding(bottom: 5),
     );
@@ -610,28 +610,28 @@ class Settings extends StatelessWidget {
         case 'HD':
           return SettingsItemModel(
             icon: Icons.co_present,
-            color: Color(0xff8D7AEE),
+            color: const Color(0xff8D7AEE),
             title: 'Hadir',
             description: 'Tanggal: ' + history.record.toString(),
           );
         case 'SK':
           return SettingsItemModel(
             icon: Icons.sick,
-            color: Color(0xffF468B7),
+            color: const Color(0xffF468B7),
             title: 'Sakit',
             description: 'Tanggal: ' + history.record.toString(),
           );
         case 'ZN':
           return SettingsItemModel(
             icon: Icons.receipt,
-            color: Color(0xffFEC85C),
+            color: const Color(0xffFEC85C),
             title: 'Izin',
             description: 'Tanggal: ' + history.record.toString(),
           );
         case 'PH':
           return SettingsItemModel(
             icon: Icons.close,
-            color: Color(0xff5FD0D3),
+            color: const Color(0xff5FD0D3),
             title: 'Alpha',
             description: 'Tanggal: ' + history.record.toString(),
           );
@@ -639,7 +639,7 @@ class Settings extends StatelessWidget {
         default:
           return SettingsItemModel(
             icon: Icons.co_present,
-            color: Color(0xff8D7AEE),
+            color: const Color(0xff8D7AEE),
             title: 'Hadir',
             description: 'Tanggal: ' + history.record.toString(),
           );
@@ -684,7 +684,7 @@ class _SettingsItemState extends State<SettingsItem> {
         .elevation(
           pressed ? 0 : 20,
           borderRadius: BorderRadius.circular(25),
-          shadowColor: Color(0x30000000),
+          shadowColor: const Color(0x30000000),
         ) // shadow borderRadius
         .constrained(height: 80)
         .padding(vertical: 12) // margin
@@ -694,7 +694,7 @@ class _SettingsItemState extends State<SettingsItem> {
           onTap: () => print('onTap'),
         )
         .scale(all: pressed ? 0.95 : 1.0, animate: true)
-        .animate(Duration(milliseconds: 150), Curves.easeOut);
+        .animate(const Duration(milliseconds: 150), Curves.easeOut);
 
     final Widget icon = Icon(widget.icon, size: 20, color: Colors.white)
         .padding(all: 12)
@@ -706,7 +706,7 @@ class _SettingsItemState extends State<SettingsItem> {
 
     final Widget title = Text(
       widget.title,
-      style: TextStyle(
+      style: const TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 16,
       ),
@@ -714,7 +714,7 @@ class _SettingsItemState extends State<SettingsItem> {
 
     final Widget description = Text(
       widget.description,
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.black26,
         fontWeight: FontWeight.bold,
         fontSize: 12,

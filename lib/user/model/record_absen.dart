@@ -15,7 +15,7 @@ class RecordAbsen {
 
   factory RecordAbsen.fromJson(Map<String, dynamic> json) {
     return RecordAbsen(
-      id_absen: json['id_absen'].toString() ?? '',
+      id_absen: json['id_absensi'].toString() ?? '',
       nis: json['nis'] ?? '',
       record: DateTime.parse(json['kalender_absensi']),
       kd_ket: json['kode_keterangan'] ?? '',
@@ -24,10 +24,10 @@ class RecordAbsen {
   }
 
   Map<String, dynamic> toJson() => {
-        'id_absen': id_absen,
+        'id_absensi': id_absen,
         'nis': nis,
         'kalender_absensi': record.toIso8601String(),
         'kode_keterangan': kd_ket,
         'nama_keterangan': namaKeterangan,
-  };
+      };
 }
