@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_attendance_app/Screen/record/bar_chart.dart';
+import 'package:project_attendance_app/Screen/record/chart.dart';
+import 'package:project_attendance_app/Screen/record/indicator.dart';
 import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
 import 'package:project_attendance_app/bloc/record_bloc.dart';
 import 'package:project_attendance_app/coba.dart';
@@ -16,182 +19,6 @@ import 'package:project_attendance_app/user/userPreferences/user_preferences.dar
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'package:styled_widget/styled_widget.dart';
-
-class ExampleSidebarX extends StatelessWidget {
-  const ExampleSidebarX({
-    Key? key,
-    required SidebarXController controller,
-  })  : _controller = controller,
-        super(key: key);
-
-  final SidebarXController _controller;
-  Future<void> logout() async {
-    await RememberUserPrefs.clearUserInfo();
-    await RememberRecordPrefs.clearRememberAbsensi();
-    Get.offAll(() => const LoginPage());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SidebarX(
-      controller: _controller,
-      theme: SidebarXTheme(
-        decoration: BoxDecoration(
-          color: canvasColor,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        hoverColor: scaffoldBackgroundColor,
-        textStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-        selectedTextStyle: const TextStyle(color: Colors.white),
-        itemTextPadding: const EdgeInsets.only(left: 30),
-        selectedItemTextPadding: const EdgeInsets.only(left: 30),
-        itemDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: canvasColor),
-        ),
-        selectedItemDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: actionColor.withOpacity(0.37),
-          ),
-          gradient: const LinearGradient(
-            colors: [accentCanvasColor, canvasColor],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.28),
-              blurRadius: 30,
-            )
-          ],
-        ),
-        iconTheme: IconThemeData(
-          color: Colors.white.withOpacity(0.7),
-          size: 20,
-        ),
-        selectedIconTheme: const IconThemeData(
-          color: Colors.white,
-          size: 20,
-        ),
-      ),
-      extendedTheme: const SidebarXTheme(
-        width: 250,
-        decoration: BoxDecoration(
-          color: canvasColor,
-        ),
-      ),
-      headerDivider: divider,
-      headerBuilder: (context, extended) {
-        return const Padding(
-          padding: EdgeInsets.only(top: 33),
-          child: Text(
-            "Absen Aja!",
-            style: TextStyle(
-                fontSize: 38, color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-        );
-      },
-      items: [
-        SidebarXItem(
-          icon: Icons.security,
-          label: 'Home',
-          onTap: () {
-            debugPrint('Home');
-            _controller.setExtended(false);
-          },
-        ),
-        SidebarXItem(
-          icon: Icons.nightlight,
-          label: 'Detail Absen',
-          onTap: () {
-            debugPrint('Home');
-            _controller.setExtended(false);
-          },
-        ),
-        const SidebarXItem(
-          icon: Icons.info,
-          label: 'Tentang Kami',
-        ),
-        SidebarXItem(icon: Icons.logout, label: 'Keluar', onTap: logout),
-        const SidebarXItem(
-          iconWidget: FlutterLogo(size: 20),
-          label: 'Flutter',
-        ),
-      ],
-      footerDivider: divider,
-      footerBuilder: ((context, extended) {
-        return const Text(
-          "Created By: Militan",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        );
-      }),
-    );
-  }
-}
-
-class _ScreensExample extends StatelessWidget {
-  const _ScreensExample({
-    Key? key,
-    required this.controller,
-  }) : super(key: key);
-
-  final SidebarXController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        final pageTitle = _getTitleByIndex(controller.selectedIndex);
-        switch (controller.selectedIndex) {
-          case 0:
-            return const UserPage();
-          case 1:
-            return const RecordDetailPage();
-          default:
-            return Text(
-              pageTitle,
-              style: theme.textTheme.headlineSmall,
-            );
-        }
-      },
-    );
-  }
-}
-
-String _getTitleByIndex(int index) {
-  switch (index) {
-    case 0:
-      return 'Home';
-    case 1:
-      return 'Search';
-    case 2:
-      return 'People';
-    case 3:
-      return 'Favorites';
-    case 4:
-      return 'Custom iconWidget';
-    case 5:
-      return 'Profile';
-    case 6:
-      return 'Settings';
-    default:
-      return 'Not found page';
-  }
-}
-
-const canvasColor = Color(0xff3977ff);
-const scaffoldBackgroundColor = Color(0xFF464667);
-const accentCanvasColor = Color.fromARGB(255, 19, 41, 87);
-const white = Colors.white;
-final actionColor = const Color(0xFF5F5FA7).withOpacity(0.6);
-final divider = Divider(
-  color: white.withOpacity(0.3),
-  height: 5,
-  thickness: 1,
-);
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -235,9 +62,9 @@ class _RecordPageState extends State<RecordPage> {
             key: _key,
             appBar: isSmallScreen
                 ? AppBar(
-                    backgroundColor: canvasColor,
+                    backgroundColor: Colors.blue,
                     title: Text(
-                      _getTitleByIndex(_controller.selectedIndex),
+                      'Dashboard',
                       style: const TextStyle(color: Colors.white),
                     ),
                     leading: Padding(
@@ -364,7 +191,105 @@ class _UserPageState extends State<UserPage> {
                             onActionSelected: (actionName) =>
                                 handleActionSelected(context, actionName),
                           ),
-                          Settings(histories: state.record),
+                          <Widget>[
+                            const <Widget>[
+                              Text(
+                                'Record',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              PieChartSample3(),
+                            ]
+                                .toColumn(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround)
+                                .padding(horizontal: 20, vertical: 10)
+                                .decorated(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20))
+                                .elevation(
+                                  5,
+                                  shadowColor: Colors.black,
+                                  borderRadius: BorderRadius.circular(20),
+                                )
+                                .alignment(Alignment.topCenter),
+                            const SizedBox(
+                              height: 25,
+                            ),
+                            const <Widget>[
+                              Text(
+                                'Record',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              BarChartRecord(),
+                            ]
+                                .toColumn(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround)
+                                .padding(horizontal: 20, vertical: 10)
+                                .decorated(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20))
+                                .elevation(
+                                  5,
+                                  shadowColor: Colors.black,
+                                  borderRadius: BorderRadius.circular(20),
+                                )
+                                .alignment(Alignment.topCenter),
+                            const SizedBox(
+                              height: 25,
+                            ),
+                            <Widget>[
+                              <Widget>[
+                                const Indicator(
+                                  color: Color(0xff5FD0D3),
+                                  text: 'Hadir',
+                                  isSquare: false,
+                                ),
+                                const Indicator(
+                                  color: Color(0xff8D7AEE),
+                                  text: 'Sakit',
+                                  isSquare: false,
+                                ),
+                                const Indicator(
+                                  color: Color(0xffFEC85C),
+                                  text: 'Izin',
+                                  isSquare: false,
+                                ),
+                                const Indicator(
+                                  color: Color(0xffF468B7),
+                                  text: 'Alpha',
+                                  isSquare: false,
+                                ),
+                              ].toRow(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround),
+                            ]
+                                .toColumn(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround)
+                                .padding(horizontal: 20, vertical: 10)
+                                .decorated(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20))
+                                .elevation(
+                                  5,
+                                  shadowColor: Colors.black,
+                                  borderRadius: BorderRadius.circular(20),
+                                )
+                                .alignment(Alignment.topCenter),
+                          ].toColumn().parent(page),
                         ].toColumn().parent(page);
                       } else {
                         return const Center(child: CircularProgressIndicator());
@@ -557,181 +482,4 @@ class ActionsRow extends StatelessWidget {
           _buildActionItem('Alpha', Icons.close),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceAround),
       ].toColumn(crossAxisAlignment: CrossAxisAlignment.start);
-}
-
-class SettingsItemModel {
-  final IconData icon;
-  final Color color;
-  final String title;
-  final String description;
-  const SettingsItemModel({
-    required this.color,
-    required this.description,
-    required this.icon,
-    required this.title,
-  });
-}
-
-const List<SettingsItemModel> settingsItems = [
-  SettingsItemModel(
-    icon: Icons.co_present,
-    color: Color(0xff8D7AEE),
-    title: 'Hadir',
-    description: 'Ensure your harvesting address',
-  ),
-  SettingsItemModel(
-    icon: Icons.sick,
-    color: Color(0xffF468B7),
-    title: 'Sakit',
-    description: 'System permission change',
-  ),
-  SettingsItemModel(
-    icon: Icons.receipt,
-    color: Color(0xffFEC85C),
-    title: 'Izin',
-    description: 'Basic functional settings',
-  ),
-  SettingsItemModel(
-    icon: Icons.close,
-    color: Color(0xff5FD0D3),
-    title: 'Alpa',
-    description: 'Take over the news in time',
-  ),
-];
-
-class Settings extends StatelessWidget {
-  final List<RecordAbsen> histories;
-  const Settings({super.key, required this.histories});
-
-  @override
-  Widget build(BuildContext context) {
-    List<SettingsItemModel> setItem = histories.map((history) {
-      switch (history.kd_ket) {
-        case 'HD':
-          return SettingsItemModel(
-            icon: Icons.co_present,
-            color: const Color(0xff8D7AEE),
-            title: 'Hadir',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
-        case 'SK':
-          return SettingsItemModel(
-            icon: Icons.sick,
-            color: const Color(0xffF468B7),
-            title: 'Sakit',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
-        case 'ZN':
-          return SettingsItemModel(
-            icon: Icons.receipt,
-            color: const Color(0xffFEC85C),
-            title: 'Izin',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
-        case 'PH':
-          return SettingsItemModel(
-            icon: Icons.close,
-            color: const Color(0xff5FD0D3),
-            title: 'Alpha',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
-
-        default:
-          return SettingsItemModel(
-            icon: Icons.co_present,
-            color: const Color(0xff8D7AEE),
-            title: 'Hadir',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
-      }
-    }).toList();
-    return (setItem
-        .map((settingsItem) => SettingsItem(
-              settingsItem.icon,
-              settingsItem.color,
-              settingsItem.title,
-              settingsItem.description,
-            ))
-        .toList()
-        .toColumn());
-  }
-}
-
-class SettingsItem extends StatefulWidget {
-  SettingsItem(this.icon, this.iconBgColor, this.title, this.description);
-
-  final IconData icon;
-  final Color iconBgColor;
-  final String title;
-  final String description;
-
-  @override
-  _SettingsItemState createState() => _SettingsItemState();
-}
-
-class _SettingsItemState extends State<SettingsItem> {
-  bool pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    settingsItem({required Widget child}) => Styled.widget(child: child)
-        .alignment(Alignment.center)
-        .borderRadius(all: 15)
-        .ripple()
-        .backgroundColor(Colors.white, animate: true)
-        .clipRRect(all: 25) // clip ripple
-        .borderRadius(all: 25, animate: true)
-        .elevation(
-          pressed ? 0 : 20,
-          borderRadius: BorderRadius.circular(25),
-          shadowColor: const Color(0x30000000),
-        ) // shadow borderRadius
-        .constrained(height: 80)
-        .padding(vertical: 12) // margin
-        .gestures(
-          onTapChange: (tapStatus) => setState(() => pressed = tapStatus),
-          onTapDown: (details) => print('tapv Down'),
-          onTap: () => print('onTap'),
-        )
-        .scale(all: pressed ? 0.95 : 1.0, animate: true)
-        .animate(const Duration(milliseconds: 150), Curves.easeOut);
-
-    final Widget icon = Icon(widget.icon, size: 20, color: Colors.white)
-        .padding(all: 12)
-        .decorated(
-          color: widget.iconBgColor,
-          borderRadius: BorderRadius.circular(30),
-        )
-        .padding(left: 15, right: 10);
-
-    final Widget title = Text(
-      widget.title,
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 16,
-      ),
-    ).padding(bottom: 5);
-
-    final Widget description = Text(
-      widget.description,
-      style: const TextStyle(
-        color: Colors.black26,
-        fontWeight: FontWeight.bold,
-        fontSize: 12,
-      ),
-    );
-
-    return settingsItem(
-      child: <Widget>[
-        icon,
-        <Widget>[
-          title,
-          description,
-        ].toColumn(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-        ),
-      ].toRow(),
-    );
-  }
 }
