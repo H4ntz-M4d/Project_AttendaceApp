@@ -24,8 +24,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreen extends State<ProfileScreen> {
-  final List<ProfilItem> _editingProfil = [];
-  List _listdata = [];
   final CurrentUser _currentUser = Get.put(CurrentUser());
 
   String _alamat = ''; // Tambahkan variabel name
