@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
 import 'package:project_attendance_app/Screen/record/record_screen.dart';
+import 'package:project_attendance_app/switch.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/account_screen.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
@@ -19,19 +20,17 @@ class DrawerNavigation extends StatelessWidget {
     }
 
     return Drawer(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const DrawerHeader(
+          DrawerHeader(
             decoration: BoxDecoration(
-              color: Color(0xff3977ff),
+              color: Theme.of(context).primaryColor,
             ),
             child: Text(
               'Siabsen',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ),
           ListTile(
@@ -56,13 +55,23 @@ class DrawerNavigation extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.light),
+            title: Text('Tema'),
+            trailing: SwitchExample(),
+            onTap: () {
+              // Add your logic here to navigate to Sent page
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.info),
             title: Text('Tentang Kami'),
             onTap: () {
               // Add your logic here to navigate to Drafts page
             },
           ),
-          Divider(),
+          Divider(
+            color: Theme.of(context).dividerColor,
+          ),
           ListTile(
             leading: Icon(Icons.account_circle_rounded),
             title: Text('Akun'),

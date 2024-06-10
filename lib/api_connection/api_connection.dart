@@ -1,5 +1,5 @@
 class API {
-  static const hostConnect = "http://192.168.61.145/api_attendance_app";
+  static const hostConnect = "http://192.168.72.240/api_attendance_app";
   static const hostConnectUser = "$hostConnect/user";
 
   static const login = "$hostConnect/user/login.php";
@@ -9,4 +9,7 @@ class API {
   static const verifyCode = "$hostConnect/user/verify_code.php";
   static const resetPassword = "$hostConnect/user/reset_password.php";
   static const getRecord = "$hostConnect/user/get_record.php";
+  static const getTop5Record = "$hostConnect/user/get_top_five_records.php";
+  static const getCountTotalRecords =
+      "$hostConnect/user/count_total_records.php";
 }

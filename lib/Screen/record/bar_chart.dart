@@ -5,12 +5,8 @@ import 'package:project_attendance_app/user/userPreferences/record_preferences.d
 
 // ignore: must_be_immutable
 class _BarChart extends StatelessWidget {
-  int hadir = 0;
-  int sakit = 0;
-  int izin = 0;
-  int alpha = 0;
-
-  _BarChart();
+  List<int> data;
+  _BarChart(this.data);
 
   @override
   Widget build(BuildContext context) {
@@ -23,22 +19,7 @@ class _BarChart extends StatelessWidget {
           return Text(
               'Error: ${snapshot.error}'); // Tampilkan pesan error jika ada
         } else {
-          for (var record in snapshot.data!) {
-            switch (record.kd_ket) {
-              case 'HD':
-                hadir++;
-                break;
-              case 'SK':
-                sakit++;
-                break;
-              case 'ZN':
-                izin++;
-                break;
-              case 'PH':
-                alpha++;
-                break;
-            }
-          }
+          int maxData = data.reduce((curr, next) => curr > next ? curr : next);
           return BarChart(
             BarChartData(
               barTouchData: barTouchData,
@@ -47,7 +28,7 @@ class _BarChart extends StatelessWidget {
               barGroups: barGroups,
               gridData: const FlGridData(show: false),
               alignment: BarChartAlignment.spaceAround,
-              maxY: 7,
+              maxY: maxData.toDouble(),
             ),
           ); // Tampilkan data setelah selesai
         }
@@ -189,7 +170,7 @@ class _BarChart extends StatelessWidget {
           x: 0,
           barRods: [
             BarChartRodData(
-              toY: hadir.toDouble(),
+              toY: data[0].toDouble(),
               gradient: _barsGradient,
             )
           ],
@@ -199,7 +180,7 @@ class _BarChart extends StatelessWidget {
           x: 1,
           barRods: [
             BarChartRodData(
-              toY: sakit.toDouble(),
+              toY: data[1].toDouble(),
               gradient: _barsGradient2,
             )
           ],
@@ -209,7 +190,7 @@ class _BarChart extends StatelessWidget {
           x: 2,
           barRods: [
             BarChartRodData(
-              toY: izin.toDouble(),
+              toY: data[2].toDouble(),
               gradient: _barsGradient3,
             )
           ],
@@ -219,7 +200,7 @@ class _BarChart extends StatelessWidget {
           x: 3,
           barRods: [
             BarChartRodData(
-              toY: alpha.toDouble(),
+              toY: data[3].toDouble(),
               gradient: _barsGradient4,
             )
           ],
@@ -229,7 +210,8 @@ class _BarChart extends StatelessWidget {
 }
 
 class BarChartRecord extends StatefulWidget {
-  const BarChartRecord({super.key});
+  List<int> data;
+  BarChartRecord({super.key, required this.data});
 
   @override
   State<StatefulWidget> createState() => BarChartRecordState();
@@ -240,7 +222,7 @@ class BarChartRecordState extends State<BarChartRecord> {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1.6,
-      child: _BarChart(),
+      child: _BarChart(widget.data),
     );
   }
 }

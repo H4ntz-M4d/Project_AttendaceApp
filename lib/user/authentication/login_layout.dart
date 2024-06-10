@@ -57,14 +57,8 @@ class _LoginPage extends State<LoginPage> {
           });
 
           Siswa userInfo = Siswa.fromJson(resBodyOfLogin["userData"]);
-          List<RecordAbsen> historyAbsensi = [];
-
-          for (var history in resBodyOfLogin["userHistory"]) {
-            historyAbsensi.add(RecordAbsen.fromJson(history));
-          }
 
           await RememberUserPrefs.storeUserInfo(userInfo);
-          await RememberRecordPrefs.saveRememberAbsensi(historyAbsensi);
 
           Get.offAll(() => const RecordPage());
         } else {
