@@ -316,7 +316,7 @@ class _UserCardState extends State<UserCard> {
     return ElevatedButton(
       onPressed: () {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (ctx) => const DetailAbsen()));
+            .push(MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
       },
       child: const Text("Lihat Detail >>"),
       style: ElevatedButton.styleFrom(side: BorderSide.none),

@@ -5,6 +5,7 @@ import 'package:project_attendance_app/Screen/record/record_screen.dart';
 import 'package:project_attendance_app/switch.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/account_screen.dart';
+import 'package:project_attendance_app/user/fragments/detail_absen.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
@@ -50,6 +51,17 @@ class DrawerNavigation extends StatelessWidget {
               Navigator.pop(context);
               Future.delayed(const Duration(milliseconds: 500), () {
                 Get.to(() => const RecordDetailPage());
+              });
+              // Add your logic here to navigate to Sent page
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.auto_graph_outlined),
+            title: Text('Detail Absensi'),
+            onTap: () {
+              Navigator.pop(context);
+              Future.delayed(const Duration(milliseconds: 500), () {
+                Get.to(() => const DetailAbsen());
               });
               // Add your logic here to navigate to Sent page
             },
