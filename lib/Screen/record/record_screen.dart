@@ -40,7 +40,7 @@ class ExampleSidebarX extends StatelessWidget {
           color: canvasColor,
           borderRadius: BorderRadius.circular(20),
         ),
-        hoverColor: scaffoldBackgroundColor,
+        // hoverColor: scaffoldBackgroundColor,
         textStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
         selectedTextStyle: const TextStyle(color: Colors.white),
         itemTextPadding: const EdgeInsets.only(left: 30),
@@ -413,7 +413,7 @@ class _UserCardState extends State<UserCard> {
           user.nama,
           style: TextStyle(
             color: Colors.white.withOpacity(0.6),
-            fontSize: 12,
+            fontSize: 16,
           ),
         ),
       ].toColumn(crossAxisAlignment: CrossAxisAlignment.start),
