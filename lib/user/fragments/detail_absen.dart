@@ -170,15 +170,32 @@ class _DetailAbsenState extends State<DetailAbsen> {
                   });
                 },
                 eventLoader: _getEventsForDay,
-                calendarStyle: const CalendarStyle(
+                calendarStyle: CalendarStyle(
                   outsideDaysVisible: false,
-                  selectedDecoration: BoxDecoration(
+                  selectedDecoration: const BoxDecoration(
                     color: Color.fromARGB(255, 0, 141, 218),
                     shape: BoxShape.circle,
                   ),
-                  selectedTextStyle: TextStyle(color: Colors.white),
-                  defaultTextStyle: TextStyle(color: Colors.black),
-                  todayTextStyle: TextStyle(color: Colors.black),
+                  todayDecoration:const BoxDecoration(
+                    color: Color.fromARGB(255, 53, 114, 239),
+                    shape: BoxShape.circle,
+                  ),
+                  selectedTextStyle:const  TextStyle(color: Colors.white),
+                  defaultTextStyle: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  todayTextStyle:const TextStyle(color: Colors.white),
+                ),
+                headerStyle: HeaderStyle(
+                  titleCentered: true,
+                  formatButtonVisible: false,
+                  titleTextStyle: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                        fontWeight: FontWeight.w700, fontSize: 25),
+                  ),
                 ),
                 calendarBuilders: CalendarBuilders(
                   markerBuilder: (context, date, events) {
