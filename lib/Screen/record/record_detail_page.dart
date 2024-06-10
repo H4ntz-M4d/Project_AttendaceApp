@@ -40,12 +40,36 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate() async {
     final DateTime? picked = await showMonthYearPicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      locale: const Locale('id', 'ID'),
+      builder: (context, child) {
+        final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+        final dialogBackgroundColor =
+            isDarkTheme ? Color(0xFF1B2339) : Colors.white;
+        final textColor = isDarkTheme ? Colors.white : Color(0xFF1B2339);
+
+        return Center(
+          child: SizedBox(
+            width: 420.0, // Sesuaikan lebar dialog
+            height: 520.0, // Sesuaikan tinggi dialog
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                dialogBackgroundColor: dialogBackgroundColor,
+                textTheme: TextTheme(
+                  headlineLarge: TextStyle(color: textColor),
+                  bodyMedium: TextStyle(color: textColor),
+                ),
+              ),
+              child: child!,
+            ),
+          ),
+        );
+      },
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -68,9 +92,9 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
         final isSmallScreen = MediaQuery.of(context).size.width < 600;
         return Scaffold(
           appBar: AppBar(
-            title: Text('Grafik Absensi'),
+            title: const Text('Grafik Absensi'),
           ),
-          drawer: DrawerNavigation(),
+          drawer: const DrawerNavigation(),
           body: <Widget>[
             <Widget>[
               Text(
@@ -82,13 +106,13 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
                 future: getCountRecordsInfo(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (snapshot.hasData) {
                     return PieChartSample3(data: snapshot.data!);
                   } else {
-                    return Text('No data available');
+                    return const Text('No data available');
                   }
                 },
               ),
@@ -112,13 +136,13 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
                 future: getCountRecordsInfo(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (snapshot.hasData) {
                     return BarChartRecord(data: snapshot.data!);
                   } else {
-                    return Text('No data available');
+                    return const Text('No data available');
                   }
                 },
               ),
@@ -138,49 +162,40 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
               height: 25,
             ),
             Center(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Material(
-                  elevation: 5,
-                  borderRadius: BorderRadius.circular(20),
-                  shadowColor: Colors.black,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize
-                            .min, // Ensures the column takes up only the necessary space
-                        children: [
-                          TextFormField(
-                            controller: tglLahirController,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 10),
-                              border: const OutlineInputBorder(),
-                              filled: true,
-                              fillColor: const Color(0xFFF5F5F5),
-                              suffixIcon: IconButton(
-                                icon: const Icon(Icons.calendar_today),
-                                onPressed: () {
-                                  _selectDate(context);
-                                },
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Isi Tanggal Lahir";
-                              }
-                              return null;
+              child: Material(
+                elevation: 5,
+                borderRadius: BorderRadius.circular(20),
+                shadowColor: Colors.black,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize
+                        .min, // Ensures the column takes up only the necessary space
+                    children: [
+                      TextFormField(
+                        controller: tglLahirController,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          filled: true,
+                          fillColor: const Color(0xFFF5F5F5),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () {
+                              _selectDate();
                             },
                           ),
-                        ],
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Isi Tanggal Lahir";
+                          }
+                          return null;
+                        },
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),

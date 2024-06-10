@@ -53,15 +53,15 @@ class DashboardSiswa extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.people),
                     onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => const ProfileScreen()));
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.assignment_turned_in_sharp),
                     onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => const AccountScreen()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => const AccountScreen()));
                     },
                   ),
                 ],
