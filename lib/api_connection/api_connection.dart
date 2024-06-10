@@ -9,6 +9,8 @@ class API {
   static const forgotPassword = "$hostConnect/user/forgot_password.php";
   static const verifyCode = "$hostConnect/user/verify_code.php";
   static const resetPassword = "$hostConnect/user/reset_password.php";
+  static const sendEmailCode = "$hostConnect/user/email_code.php";
+  static const changeEmail = "$hostConnect/user/change_email.php";
   static const getRecord = "$hostConnect/user/get_record.php";
   static const getTop5Record = "$hostConnect/user/get_top_five_records.php";
   static const getCountTotalRecords =
