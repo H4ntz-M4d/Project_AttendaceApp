@@ -380,16 +380,15 @@ class ActionsRow extends StatelessWidget {
             break;
         }
       },
-      child:
-          Icon(icon, size: 20, color: Theme.of(context).colorScheme.secondary)
-              .alignment(Alignment.center)
-              .ripple()
-              .constrained(width: 50, height: 50)
-              .backgroundColor(
-                Theme.of(context).colorScheme.secondaryContainer,
-              )
-              .clipOval()
-              .padding(bottom: 5),
+      child: Icon(icon, size: 20, color: Theme.of(context).colorScheme.tertiary)
+          .alignment(Alignment.center)
+          .ripple()
+          .constrained(width: 50, height: 50)
+          .backgroundColor(
+            Theme.of(context).colorScheme.secondaryContainer,
+          )
+          .clipOval()
+          .padding(bottom: 5),
     );
 
     final Widget actionText = Text(

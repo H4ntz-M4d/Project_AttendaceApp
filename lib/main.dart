@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:month_year_picker2/month_year_picker2.dart';
 import 'package:project_attendance_app/Screen/record/record_screen.dart';
 import 'package:project_attendance_app/Screen/splashScreen/splash_layout.dart';
 import 'package:project_attendance_app/bloc/theme_bloc/theme_bloc.dart';
@@ -32,6 +34,16 @@ class MyApp extends StatelessWidget {
         }
         return GetMaterialApp(
           theme: themeData,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            MonthYearPickerLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en', 'US'),
+            Locale('id', 'ID'), // Tambahkan dukungan untuk bahasa Indonesia
+          ],
           title: 'Attendance App',
           debugShowCheckedModeBanner: false,
           home: FutureBuilder(

@@ -15,16 +15,17 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   static final ThemeData _lightTheme = ThemeData(
     brightness: Brightness.light,
     canvasColor: Colors.white,
-    primaryColor: const Color(0xFF6200EE),
+    primaryColor: const Color(0xff3977ff),
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF6200EE),
+      backgroundColor: Color(0xff3977ff),
       foregroundColor: Colors.white,
     ),
     colorScheme: const ColorScheme.light(
-      primary: Color(0xFF6200EE),
-      primaryContainer: Color(0xFF6200EE),
-      secondary: Colors.black,
+      primary: Color(0xff3977ff),
+      primaryContainer: Color(0xff3977ff),
+      secondary: Color(0xffecebee),
       secondaryContainer: Color(0xffecebee),
+      tertiary: Colors.black,
       tertiaryContainer: Colors.white,
       background: Color(0xFFFFFFFF),
       surface: Color(0xFFFFFFFF),
@@ -78,17 +79,18 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
 // Definisi Tema Gelap
   static final ThemeData _darkTheme = ThemeData(
     brightness: Brightness.dark,
-    primaryColor: const Color(0xFFBB86FC),
+    primaryColor: const Color(0xff3977ff),
     canvasColor: Colors.black,
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFFBB86FC),
+      backgroundColor: Color(0xff3977ff),
       foregroundColor: Colors.black,
     ),
     colorScheme: const ColorScheme.dark(
-      primary: Color(0xFFBB86FC),
-      primaryContainer: Color(0xFFBB86FC),
+      primary: Color(0xff3977ff),
+      primaryContainer: Color(0xff3977ff),
       secondary: Colors.white,
       secondaryContainer: Color(0xFF696969),
+      tertiary: Colors.white,
       tertiaryContainer: Color(0xFF1B2339),
       background: Color(0xFF121212),
       surface: Color(0xFF121212),
@@ -100,7 +102,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
       onError: Colors.black,
     ),
     scaffoldBackgroundColor: const Color(0xFF282E45),
-    dividerColor: Color(0xFFBB86FC),
+    dividerColor: Color(0xff3977ff),
     textTheme: const TextTheme(
       headlineLarge: TextStyle(
         color: Color(0xFF50E2FD),

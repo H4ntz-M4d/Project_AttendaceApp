@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:month_year_picker2/month_year_picker2.dart';
 import 'package:project_attendance_app/Screen/record/bar_chart.dart';
 import 'package:project_attendance_app/Screen/record/chart.dart';
-import 'package:project_attendance_app/Screen/record/indicator.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/coba.dart';
 import 'package:project_attendance_app/user/model/user.dart';
@@ -19,6 +20,9 @@ class RecordDetailPage extends StatefulWidget {
 }
 
 class _RecordDetailPageState extends State<RecordDetailPage> {
+  final tglLahirController = TextEditingController();
+  DateTime selectedDate = DateTime.now();
+
   Future<List<int>> getCountRecordsInfo() async {
     try {
       Siswa? siswa = await RememberUserPrefs.readUserInfo();
@@ -33,6 +37,22 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
       ];
     } catch (e) {
       return [];
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showMonthYearPicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        tglLahirController.text = DateFormat('MM-yyyy', 'id_ID')
+            .format(picked); // Format tanggal untuk Indonesia
+      });
     }
   }
 
@@ -117,41 +137,54 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
             const SizedBox(
               height: 25,
             ),
-            <Widget>[
-              <Widget>[
-                const Indicator(
-                  color: Color(0xff5FD0D3),
-                  text: 'Hadir',
-                  isSquare: false,
-                ),
-                const Indicator(
-                  color: Color(0xff8D7AEE),
-                  text: 'Sakit',
-                  isSquare: false,
-                ),
-                const Indicator(
-                  color: Color(0xffFEC85C),
-                  text: 'Izin',
-                  isSquare: false,
-                ),
-                const Indicator(
-                  color: Color(0xffF468B7),
-                  text: 'Alpha',
-                  isSquare: false,
-                ),
-              ].toRow(mainAxisAlignment: MainAxisAlignment.spaceAround),
-            ]
-                .toColumn(mainAxisAlignment: MainAxisAlignment.spaceAround)
-                .padding(horizontal: 20, vertical: 10)
-                .decorated(
-                    color: Theme.of(context).colorScheme.tertiaryContainer,
-                    borderRadius: BorderRadius.circular(20))
-                .elevation(
-                  5,
-                  shadowColor: Colors.black,
+            Center(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Material(
+                  elevation: 5,
                   borderRadius: BorderRadius.circular(20),
-                )
-                .alignment(Alignment.topCenter),
+                  shadowColor: Colors.black,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize
+                            .min, // Ensures the column takes up only the necessary space
+                        children: [
+                          TextFormField(
+                            controller: tglLahirController,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 10),
+                              border: const OutlineInputBorder(),
+                              filled: true,
+                              fillColor: const Color(0xFFF5F5F5),
+                              suffixIcon: IconButton(
+                                icon: const Icon(Icons.calendar_today),
+                                onPressed: () {
+                                  _selectDate(context);
+                                },
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Isi Tanggal Lahir";
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ].toColumn().parent(page),
         );
       },
