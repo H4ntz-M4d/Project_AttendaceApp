@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:month_year_picker2/month_year_picker2.dart';
 import 'package:project_attendance_app/Screen/record/bar_chart.dart';
 import 'package:project_attendance_app/Screen/record/chart.dart';
-import 'package:project_attendance_app/Screen/record/indicator.dart';
+import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/coba.dart';
+import 'package:project_attendance_app/user/model/user.dart';
+import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:styled_widget/styled_widget.dart';
+import 'package:http/http.dart' as http;
 
 class RecordDetailPage extends StatefulWidget {
   const RecordDetailPage({super.key});
@@ -13,6 +20,42 @@ class RecordDetailPage extends StatefulWidget {
 }
 
 class _RecordDetailPageState extends State<RecordDetailPage> {
+  final tglLahirController = TextEditingController();
+  DateTime selectedDate = DateTime.now();
+
+  Future<List<int>> getCountRecordsInfo() async {
+    try {
+      Siswa? siswa = await RememberUserPrefs.readUserInfo();
+      final results = await http
+          .post(Uri.parse(API.getCountTotalRecords), body: {"nis": siswa?.nis});
+      var resultsDecode = json.decode(results.body)['userData'];
+      return [
+        int.parse(resultsDecode['jumlah_hadir']),
+        int.parse(resultsDecode['jumlah_sakit']),
+        int.parse(resultsDecode['jumlah_izin']),
+        int.parse(resultsDecode['jumlah_alpha']),
+      ];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showMonthYearPicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        tglLahirController.text = DateFormat('MM-yyyy', 'id_ID')
+            .format(picked); // Format tanggal untuk Indonesia
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // ignore: prefer_function_declarations_over_variables
@@ -29,50 +72,31 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
           ),
           drawer: DrawerNavigation(),
           body: <Widget>[
-            const <Widget>[
+            <Widget>[
               Text(
                 'Grafik Record',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
+                style: Theme.of(context).textTheme.headlineLarge,
                 textAlign: TextAlign.center,
               ),
-              PieChartSample3(),
+              FutureBuilder<List<int>>(
+                future: getCountRecordsInfo(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (snapshot.hasData) {
+                    return PieChartSample3(data: snapshot.data!);
+                  } else {
+                    return Text('No data available');
+                  }
+                },
+              ),
             ]
                 .toColumn(mainAxisAlignment: MainAxisAlignment.spaceAround)
                 .padding(horizontal: 20, vertical: 10)
                 .decorated(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20))
-                .elevation(
-                  5,
-                  shadowColor: Colors.black,
-                  borderRadius: BorderRadius.circular(20),
-                )
-                .alignment(Alignment.topCenter),
-            const SizedBox(
-              height: 25,
-            ),
-            const <Widget>[
-              Text(
-                'Grafik Record',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              BarChartRecord(),
-            ]
-                .toColumn(mainAxisAlignment: MainAxisAlignment.spaceAround)
-                .padding(horizontal: 20, vertical: 10)
-                .decorated(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
                     borderRadius: BorderRadius.circular(20))
                 .elevation(
                   5,
@@ -84,33 +108,25 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
               height: 25,
             ),
             <Widget>[
-              <Widget>[
-                const Indicator(
-                  color: Color(0xff5FD0D3),
-                  text: 'Hadir',
-                  isSquare: false,
-                ),
-                const Indicator(
-                  color: Color(0xff8D7AEE),
-                  text: 'Sakit',
-                  isSquare: false,
-                ),
-                const Indicator(
-                  color: Color(0xffFEC85C),
-                  text: 'Izin',
-                  isSquare: false,
-                ),
-                const Indicator(
-                  color: Color(0xffF468B7),
-                  text: 'Alpha',
-                  isSquare: false,
-                ),
-              ].toRow(mainAxisAlignment: MainAxisAlignment.spaceAround),
+              FutureBuilder<List<int>>(
+                future: getCountRecordsInfo(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (snapshot.hasData) {
+                    return BarChartRecord(data: snapshot.data!);
+                  } else {
+                    return Text('No data available');
+                  }
+                },
+              ),
             ]
                 .toColumn(mainAxisAlignment: MainAxisAlignment.spaceAround)
-                .padding(horizontal: 20, vertical: 10)
+                .padding(horizontal: 20, bottom: 10, top: 40)
                 .decorated(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
                     borderRadius: BorderRadius.circular(20))
                 .elevation(
                   5,
@@ -118,6 +134,57 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
                   borderRadius: BorderRadius.circular(20),
                 )
                 .alignment(Alignment.topCenter),
+            const SizedBox(
+              height: 25,
+            ),
+            Center(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Material(
+                  elevation: 5,
+                  borderRadius: BorderRadius.circular(20),
+                  shadowColor: Colors.black,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize
+                            .min, // Ensures the column takes up only the necessary space
+                        children: [
+                          TextFormField(
+                            controller: tglLahirController,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 10),
+                              border: const OutlineInputBorder(),
+                              filled: true,
+                              fillColor: const Color(0xFFF5F5F5),
+                              suffixIcon: IconButton(
+                                icon: const Icon(Icons.calendar_today),
+                                onPressed: () {
+                                  _selectDate(context);
+                                },
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Isi Tanggal Lahir";
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ].toColumn().parent(page),
         );
       },

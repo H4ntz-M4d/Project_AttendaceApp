@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         children: [
           Container(
-            color: const Color(0xFF2196FF),
+            color: const Color(0xff3977ff),
           ),
           Positioned(
             top: 40,

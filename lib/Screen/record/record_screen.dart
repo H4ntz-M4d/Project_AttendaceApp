@@ -1,9 +1,14 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
-import 'package:project_attendance_app/bloc/record_bloc.dart';
+import 'package:project_attendance_app/api_connection/api_connection.dart';
+import 'package:project_attendance_app/bloc/record_bloc/record_bloc.dart';
+import 'package:project_attendance_app/bloc/theme_bloc/app_colors.dart';
+import 'package:project_attendance_app/bloc/theme_bloc/theme_bloc.dart';
 import 'package:project_attendance_app/coba.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
@@ -16,182 +21,8 @@ import 'package:project_attendance_app/user/userPreferences/user_preferences.dar
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'package:styled_widget/styled_widget.dart';
+import 'package:http/http.dart' as http;
 
-class ExampleSidebarX extends StatelessWidget {
-  const ExampleSidebarX({
-    Key? key,
-    required SidebarXController controller,
-  })  : _controller = controller,
-        super(key: key);
-
-  final SidebarXController _controller;
-  Future<void> logout() async {
-    await RememberUserPrefs.clearUserInfo();
-    await RememberRecordPrefs.clearRememberAbsensi();
-    Get.offAll(() => const LoginPage());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SidebarX(
-      controller: _controller,
-      theme: SidebarXTheme(
-        decoration: BoxDecoration(
-          color: canvasColor,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        // hoverColor: scaffoldBackgroundColor,
-        textStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-        selectedTextStyle: const TextStyle(color: Colors.white),
-        itemTextPadding: const EdgeInsets.only(left: 30),
-        selectedItemTextPadding: const EdgeInsets.only(left: 30),
-        itemDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: canvasColor),
-        ),
-        selectedItemDecoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: actionColor.withOpacity(0.37),
-          ),
-          gradient: const LinearGradient(
-            colors: [accentCanvasColor, canvasColor],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.28),
-              blurRadius: 30,
-            )
-          ],
-        ),
-        iconTheme: IconThemeData(
-          color: Colors.white.withOpacity(0.7),
-          size: 20,
-        ),
-        selectedIconTheme: const IconThemeData(
-          color: Colors.white,
-          size: 20,
-        ),
-      ),
-      extendedTheme: const SidebarXTheme(
-        width: 250,
-        decoration: BoxDecoration(
-          color: canvasColor,
-        ),
-      ),
-      headerDivider: divider,
-      headerBuilder: (context, extended) {
-        return const Padding(
-          padding: EdgeInsets.only(top: 33),
-          child: Text(
-            "Absen Aja!",
-            style: TextStyle(
-                fontSize: 38, color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-        );
-      },
-      items: [
-        SidebarXItem(
-          icon: Icons.security,
-          label: 'Home',
-          onTap: () {
-            debugPrint('Home');
-            _controller.setExtended(false);
-          },
-        ),
-        SidebarXItem(
-          icon: Icons.nightlight,
-          label: 'Detail Absen',
-          onTap: () {
-            debugPrint('Home');
-            _controller.setExtended(false);
-          },
-        ),
-        const SidebarXItem(
-          icon: Icons.info,
-          label: 'Tentang Kami',
-        ),
-        SidebarXItem(icon: Icons.logout, label: 'Keluar', onTap: logout),
-        const SidebarXItem(
-          iconWidget: FlutterLogo(size: 20),
-          label: 'Flutter',
-        ),
-      ],
-      footerDivider: divider,
-      footerBuilder: ((context, extended) {
-        return const Text(
-          "Created By: Militan",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        );
-      }),
-    );
-  }
-}
-
-class _ScreensExample extends StatelessWidget {
-  const _ScreensExample({
-    Key? key,
-    required this.controller,
-  }) : super(key: key);
-
-  final SidebarXController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        final pageTitle = _getTitleByIndex(controller.selectedIndex);
-        switch (controller.selectedIndex) {
-          case 0:
-            return const UserPage();
-          case 1:
-            return const RecordDetailPage();
-          default:
-            return Text(
-              pageTitle,
-              style: theme.textTheme.headlineSmall,
-            );
-        }
-      },
-    );
-  }
-}
-
-String _getTitleByIndex(int index) {
-  switch (index) {
-    case 0:
-      return 'Home';
-    case 1:
-      return 'Search';
-    case 2:
-      return 'People';
-    case 3:
-      return 'Favorites';
-    case 4:
-      return 'Custom iconWidget';
-    case 5:
-      return 'Profile';
-    case 6:
-      return 'Settings';
-    default:
-      return 'Not found page';
-  }
-}
-
-const canvasColor = Color(0xff3977ff);
-const scaffoldBackgroundColor = Color(0xFF464667);
-const accentCanvasColor = Color.fromARGB(255, 19, 41, 87);
-const white = Colors.white;
-final actionColor = const Color(0xFF5F5FA7).withOpacity(0.6);
-final divider = Divider(
-  color: white.withOpacity(0.3),
-  height: 5,
-  thickness: 1,
-);
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -235,10 +66,12 @@ class _RecordPageState extends State<RecordPage> {
             key: _key,
             appBar: isSmallScreen
                 ? AppBar(
-                    backgroundColor: canvasColor,
+                    backgroundColor: Theme.of(context)
+                        .appBarTheme
+                        .backgroundColor, // Use theme here
                     title: Text(
-                      _getTitleByIndex(_controller.selectedIndex),
-                      style: const TextStyle(color: Colors.white),
+                      'Dashboard',
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     leading: Padding(
                       padding: const EdgeInsets.only(left: 20),
@@ -246,9 +79,11 @@ class _RecordPageState extends State<RecordPage> {
                         onPressed: () {
                           _key.currentState?.openDrawer();
                         },
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.menu,
-                          color: Colors.white,
+                          color: Theme.of(context)
+                              .appBarTheme
+                              .foregroundColor, // Use theme here
                         ),
                       ),
                     ),
@@ -256,6 +91,14 @@ class _RecordPageState extends State<RecordPage> {
                 : null,
             drawer: DrawerNavigation(),
             body: UserPage(),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                // Dispatch the ToggleThemeEvent when the button is pressed
+                context.read<ThemeBloc>().add(ToggleThemeEvent());
+              },
+              child: Icon(Icons.brightness_medium),
+              backgroundColor: Theme.of(context).primaryColor, // Use theme here
+            ),
           );
         },
       ),
@@ -293,10 +136,9 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   final CurrentUser _rememberCurrentUser = Get.put(CurrentUser());
 
-  Future<Map<String, dynamic>> getUserAndAbsensi() async {
+  Future<Map<String, dynamic>> getUser() async {
     final results = await Future.wait([
       RememberUserPrefs.readUserInfo(),
-      RememberRecordPrefs.getRememberAbsensi(),
     ]);
 
     Object user = results[0] ??
@@ -308,11 +150,9 @@ class _UserPageState extends State<UserPage> {
             tgl_lahir: '',
             alamat: '',
             phone: '');
-    Object absensi = results[1] ?? [];
 
     return {
       'user': user,
-      'absensi': absensi,
     };
   }
 
@@ -335,7 +175,7 @@ class _UserPageState extends State<UserPage> {
         },
         builder: (controller) {
           return FutureBuilder<Map<String, dynamic>>(
-            future: getUserAndAbsensi(),
+            future: getUser(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -345,7 +185,6 @@ class _UserPageState extends State<UserPage> {
                 return const Center(child: Text('No data available'));
               } else {
                 Siswa user = snapshot.data!['user'];
-                List<RecordAbsen> absensiToCard = snapshot.data!['absensi'];
                 return BlocProvider(
                   create: (context) => RecordBloc()..add(LoadRecordEvent()),
                   child: BlocBuilder<RecordBloc, RecordState>(
@@ -355,17 +194,22 @@ class _UserPageState extends State<UserPage> {
                       } else if (state is RecordError) {
                         return Center(child: Text('Error: ${state.message}'));
                       } else if (state is RecordLoaded) {
-                        return <Widget>[
-                          UserCard(
-                            user: user,
-                            histories: absensiToCard,
-                          ),
-                          ActionsRow(
-                            onActionSelected: (actionName) =>
-                                handleActionSelected(context, actionName),
-                          ),
-                          Settings(histories: state.record),
-                        ].toColumn().parent(page);
+                        return Scaffold(
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                          body: <Widget>[
+                            UserCard(
+                              user: user,
+                            ),
+                            ActionsRow(
+                              onActionSelected: (actionName) =>
+                                  handleActionSelected(context, actionName),
+                            ),
+                            Settings(
+                              nis: user.nis,
+                            ),
+                          ].toColumn().parent(page),
+                        );
                       } else {
                         return const Center(child: CircularProgressIndicator());
                       }
@@ -381,113 +225,137 @@ class _UserPageState extends State<UserPage> {
 
 class UserCard extends StatefulWidget {
   final Siswa user;
-  final histories;
-  const UserCard({super.key, required this.user, required this.histories});
+
+  UserCard({Key? key, required this.user}) : super(key: key);
 
   @override
-  State<UserCard> createState() => _UserCardState();
+  _UserCardState createState() => _UserCardState();
 }
 
 class _UserCardState extends State<UserCard> {
+  late Future<List<String>> data;
+
+  @override
+  void initState() {
+    super.initState();
+    data = getCountRecordsInfo();
+
+  }
+
+  Future<List<String>> getCountRecordsInfo() async {
+    try {
+      final results = await http.post(Uri.parse(API.getCountTotalRecords),
+          body: {"nis": widget.user.nis});
+      var resultsDecode = json.decode(results.body)['userData'];
+      return [
+        resultsDecode['jumlah_hadir'],
+        resultsDecode['jumlah_sakit'],
+        resultsDecode['jumlah_izin'],
+        resultsDecode['jumlah_alpha'],
+      ];
+    } catch (e) {
+      return [];
+    }
+  }
+
   Widget _buildUserRow(Siswa user) {
-    return <Widget>[
-      GestureDetector(
-        onTap: () {
-          Get.to(() => const ProfileScreen());
-        },
-        child: const CircleAvatar(
-          radius: 25,
-          backgroundImage: AssetImage('images/art.png'),
-        ).padding(top: 5, right: 10),
-      ),
-      <Widget>[
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Get.to(() => const ProfileScreen());
+          },
+          child: const CircleAvatar(
+            radius: 25,
+            backgroundImage: AssetImage('images/art.png'),
+          ).padding(top: 5, right: 10),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              user.nama,
+              style: Theme.of(context).textTheme.titleLarge,
+            ).padding(bottom: 5),
+            Text(
+              user.nis,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUserStats(List<String> records) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _buildUserStatsItem(records[0], 'Hadir'),
+        _buildUserStatsItem(records[1], 'Sakit'),
+        _buildUserStatsItem(records[2], 'Izin'),
+        _buildUserStatsItem(records[3], 'Alpha'),
+      ],
+    ).padding(vertical: 10);
+  }
+
+  Widget _buildUserStatsItem(String value, String text) {
+    return Column(
+      children: [
         Text(
-          user.nis,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          value,
+          style: Theme.of(context).textTheme.titleMedium,
         ).padding(bottom: 5),
         Text(
-          user.nama,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.6),
-            fontSize: 16,
-          ),
+          text,
+          style: Theme.of(context).textTheme.labelMedium,
         ),
-      ].toColumn(crossAxisAlignment: CrossAxisAlignment.start),
-    ].toRow();
+      ],
+    );
   }
-
-  Widget _buildUserStats(List<RecordAbsen> histories) {
-    int hadir = 0;
-    int sakit = 0;
-    int izin = 0;
-    int alpha = 0;
-
-    for (var record in histories) {
-      switch (record.kd_ket) {
-        case 'HD':
-          hadir++;
-          break;
-        case 'SK':
-          sakit++;
-          break;
-        case 'ZN':
-          izin++;
-          break;
-        case 'PH':
-          alpha++;
-          break;
-      }
-    }
-
-    return <Widget>[
-      _buildUserStatsItem(hadir.toString(), 'Hadir'),
-      _buildUserStatsItem(sakit.toString(), 'Sakit'),
-      _buildUserStatsItem(izin.toString(), 'Izin'),
-      _buildUserStatsItem(alpha.toString(), 'Alpha'),
-    ]
-        .toRow(mainAxisAlignment: MainAxisAlignment.spaceAround)
-        .padding(vertical: 10);
-  }
-
-  Widget _buildUserStatsItem(String value, String text) => <Widget>[
-        Text(value).fontSize(20).textColor(Colors.white).padding(bottom: 5),
-        Text(text).textColor(Colors.white.withOpacity(0.6)).fontSize(12),
-      ].toColumn();
 
   Widget _buildProfileViewButton() {
-    return <Widget>[
-      ElevatedButton(
-          onPressed: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (ctx) => const DetailAbsen()));
-          },
-          child: const Text("Lihat Detail >>"),
-          style: ElevatedButton.styleFrom(side: BorderSide.none)),
-    ].toRow(mainAxisAlignment: MainAxisAlignment.center);
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
+      },
+      child: const Text("Lihat Detail >>"),
+      style: ElevatedButton.styleFrom(side: BorderSide.none),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return <Widget>[
-      _buildUserRow(widget.user),
-      _buildUserStats(widget.histories),
-      _buildProfileViewButton()
-    ]
-        .toColumn(mainAxisAlignment: MainAxisAlignment.spaceAround)
-        .padding(horizontal: 20, vertical: 10)
-        .decorated(
-            color: const Color(0xff3977ff),
-            borderRadius: BorderRadius.circular(20))
-        .elevation(
-          5,
-          shadowColor: const Color(0xff3977ff),
-          borderRadius: BorderRadius.circular(20),
-        )
-        .alignment(Alignment.center);
+    return FutureBuilder<List<String>>(
+      future: data,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // atau widget loading lainnya
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildUserRow(widget.user),
+              _buildUserStats(snapshot.data!),
+              _buildProfileViewButton(),
+            ],
+          )
+              .padding(horizontal: 20, vertical: 10)
+              .decorated(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(20),
+              )
+              .elevation(
+                5,
+                shadowColor: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(20),
+              );
+        }
+      },
+    );
   }
 }
 
@@ -496,7 +364,7 @@ class ActionsRow extends StatelessWidget {
 
   ActionsRow({required this.onActionSelected});
 
-  Widget _buildActionItem(String name, IconData icon) {
+  Widget _buildActionItem(String name, IconData icon, BuildContext context) {
     final Widget actionIcon = GestureDetector(
       onTap: () {
         switch (name) {
@@ -514,21 +382,20 @@ class ActionsRow extends StatelessWidget {
             break;
         }
       },
-      child: Icon(icon, size: 20, color: const Color(0xFF42526F))
+      child: Icon(icon, size: 20, color: Theme.of(context).colorScheme.tertiary)
           .alignment(Alignment.center)
           .ripple()
           .constrained(width: 50, height: 50)
-          .backgroundColor(const Color(0xfff6f5f8))
+          .backgroundColor(
+            Theme.of(context).colorScheme.secondaryContainer,
+          )
           .clipOval()
           .padding(bottom: 5),
     );
 
     final Widget actionText = Text(
       name,
-      style: TextStyle(
-        color: Colors.black.withOpacity(0.8),
-        fontSize: 12,
-      ),
+      style: Theme.of(context).textTheme.labelSmall,
     );
 
     return <Widget>[
@@ -539,22 +406,15 @@ class ActionsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => <Widget>[
-        const Text(
+        Text(
           'Hanya tampilkan: ',
-          style: TextStyle(
-            color: Color(0xFF42526F),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleSmall,
         ).padding(vertical: 15, left: 20),
         [
-          _buildActionItem(
-            'Hadir',
-            Icons.co_present,
-          ),
-          _buildActionItem('Sakit', Icons.sick),
-          _buildActionItem('Izin', Icons.receipt),
-          _buildActionItem('Alpha', Icons.close),
+          _buildActionItem('Hadir', Icons.co_present, context),
+          _buildActionItem('Sakit', Icons.sick, context),
+          _buildActionItem('Izin', Icons.receipt, context),
+          _buildActionItem('Alpha', Icons.close, context),
         ].toRow(mainAxisAlignment: MainAxisAlignment.spaceAround),
       ].toColumn(crossAxisAlignment: CrossAxisAlignment.start);
 }
@@ -600,60 +460,92 @@ const List<SettingsItemModel> settingsItems = [
 ];
 
 class Settings extends StatelessWidget {
-  final List<RecordAbsen> histories;
-  const Settings({super.key, required this.histories});
+  String nis;
+  Settings({super.key, required this.nis});
+
+  Future<List<RecordAbsen>> getTopFiveRecords() async {
+    try {
+      final results =
+          await http.post(Uri.parse(API.getTop5Record), body: {"nis": nis});
+      var resultsDecode = json.decode(results.body);
+      List<RecordAbsen> topFiveRecords = [];
+      for (var record in resultsDecode['userData']) {
+        topFiveRecords.add(RecordAbsen.fromJson(record));
+      }
+      return topFiveRecords;
+    } catch (e) {
+      return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<SettingsItemModel> setItem = histories.map((history) {
-      switch (history.kd_ket) {
-        case 'HD':
-          return SettingsItemModel(
-            icon: Icons.co_present,
-            color: const Color(0xff8D7AEE),
-            title: 'Hadir',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
-        case 'SK':
-          return SettingsItemModel(
-            icon: Icons.sick,
-            color: const Color(0xffF468B7),
-            title: 'Sakit',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
-        case 'ZN':
-          return SettingsItemModel(
-            icon: Icons.receipt,
-            color: const Color(0xffFEC85C),
-            title: 'Izin',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
-        case 'PH':
-          return SettingsItemModel(
-            icon: Icons.close,
-            color: const Color(0xff5FD0D3),
-            title: 'Alpha',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
+    return FutureBuilder<List<RecordAbsen>>(
+      future: getTopFiveRecords(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Atau widget lain untuk menampilkan proses loading
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          List<RecordAbsen>? histories = snapshot.data;
+          if (histories != null && histories.isNotEmpty) {
+            List<SettingsItemModel> setItem = histories.map((history) {
+              switch (history.kd_ket) {
+                case 'HD':
+                  return SettingsItemModel(
+                    icon: Icons.co_present,
+                    color: const Color(0xff8D7AEE),
+                    title: 'Hadir',
+                    description: 'Tanggal: ' + history.record.toString(),
+                  );
+                case 'SK':
+                  return SettingsItemModel(
+                    icon: Icons.sick,
+                    color: const Color(0xffF468B7),
+                    title: 'Sakit',
+                    description: 'Tanggal: ' + history.record.toString(),
+                  );
+                case 'ZN':
+                  return SettingsItemModel(
+                    icon: Icons.receipt,
+                    color: const Color(0xffFEC85C),
+                    title: 'Izin',
+                    description: 'Tanggal: ' + history.record.toString(),
+                  );
+                case 'PH':
+                  return SettingsItemModel(
+                    icon: Icons.close,
+                    color: const Color(0xff5FD0D3),
+                    title: 'Alpha',
+                    description: 'Tanggal: ' + history.record.toString(),
+                  );
+                default:
+                  return SettingsItemModel(
+                    icon: Icons.co_present,
+                    color: const Color(0xff8D7AEE),
+                    title: 'Hadir',
+                    description: 'Tanggal: ' + history.record.toString(),
+                  );
+              }
+            }).toList();
 
-        default:
-          return SettingsItemModel(
-            icon: Icons.co_present,
-            color: const Color(0xff8D7AEE),
-            title: 'Hadir',
-            description: 'Tanggal: ' + history.record.toString(),
-          );
-      }
-    }).toList();
-    return (setItem
-        .map((settingsItem) => SettingsItem(
-              settingsItem.icon,
-              settingsItem.color,
-              settingsItem.title,
-              settingsItem.description,
-            ))
-        .toList()
-        .toColumn());
+            return Column(
+              children: setItem
+                  .map((settingsItem) => SettingsItem(
+                        settingsItem.icon,
+                        settingsItem.color,
+                        settingsItem.title,
+                        settingsItem.description,
+                      ))
+                  .toList(),
+            );
+          } else {
+            return Text('Tidak ada data absensi');
+          }
+        }
+      },
+    );
   }
 }
 
@@ -678,7 +570,8 @@ class _SettingsItemState extends State<SettingsItem> {
         .alignment(Alignment.center)
         .borderRadius(all: 15)
         .ripple()
-        .backgroundColor(Colors.white, animate: true)
+        .backgroundColor(Theme.of(context).colorScheme.tertiaryContainer,
+            animate: true)
         .clipRRect(all: 25) // clip ripple
         .borderRadius(all: 25, animate: true)
         .elevation(
@@ -696,13 +589,14 @@ class _SettingsItemState extends State<SettingsItem> {
         .scale(all: pressed ? 0.95 : 1.0, animate: true)
         .animate(const Duration(milliseconds: 150), Curves.easeOut);
 
-    final Widget icon = Icon(widget.icon, size: 20, color: Colors.white)
-        .padding(all: 12)
-        .decorated(
-          color: widget.iconBgColor,
-          borderRadius: BorderRadius.circular(30),
-        )
-        .padding(left: 15, right: 10);
+    final Widget icon =
+        Icon(widget.icon, size: 20, color: Theme.of(context).canvasColor)
+            .padding(all: 12)
+            .decorated(
+              color: widget.iconBgColor,
+              borderRadius: BorderRadius.circular(30),
+            )
+            .padding(left: 15, right: 10);
 
     final Widget title = Text(
       widget.title,
@@ -714,11 +608,7 @@ class _SettingsItemState extends State<SettingsItem> {
 
     final Widget description = Text(
       widget.description,
-      style: const TextStyle(
-        color: Colors.black26,
-        fontWeight: FontWeight.bold,
-        fontSize: 12,
-      ),
+      style: Theme.of(context).textTheme.labelSmall,
     );
 
     return settingsItem(
