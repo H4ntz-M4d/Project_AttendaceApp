@@ -56,8 +56,8 @@ class PieChartSample3State extends State<PieChartSample3> {
         case 0:
           return PieChartSectionData(
             color: Color(0xff5FD0D3),
-            value: widget.data[0].toDouble(),
-            title: widget.data[0].toString(),
+            value: (widget.data.isNotEmpty) ? widget.data[0].toDouble() : 0,
+            title: (widget.data.isNotEmpty) ? widget.data[0].toString() : '0',
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,
@@ -75,8 +75,8 @@ class PieChartSample3State extends State<PieChartSample3> {
         case 1:
           return PieChartSectionData(
             color: Color(0xff8D7AEE),
-            value: widget.data[1].toDouble(),
-            title: widget.data[1].toString(),
+            value: (widget.data.isNotEmpty) ? widget.data[1].toDouble() : 0,
+            title: (widget.data.isNotEmpty) ? widget.data[1].toString() : '0',
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,
@@ -94,8 +94,8 @@ class PieChartSample3State extends State<PieChartSample3> {
         case 2:
           return PieChartSectionData(
             color: Color(0xffFEC85C),
-            value: widget.data[2].toDouble(),
-            title: widget.data[2].toString(),
+            value: (widget.data.isNotEmpty) ? widget.data[2].toDouble() : 0,
+            title: (widget.data.isNotEmpty) ? widget.data[2].toString() : '0',
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,
@@ -113,8 +113,8 @@ class PieChartSample3State extends State<PieChartSample3> {
         case 3:
           return PieChartSectionData(
             color: Color(0xffF468B7),
-            value: widget.data[3].toDouble(),
-            title: widget.data[3].toString(),
+            value: (widget.data.isNotEmpty) ? widget.data[3].toDouble() : 0,
+            title: (widget.data.isNotEmpty) ? widget.data[3 ].toString() : '0',
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,

@@ -116,17 +116,15 @@ class _ProfileScreen extends State<ProfileScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back,
-              color: Colors.white,
-            )
-        ),
+              color: Theme.of(context).appBarTheme.foregroundColor,
+            )),
         title: Text(
           'Profil',
-          style: GoogleFonts.lato(
-              color: Colors.white, fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -149,10 +147,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                           contentPadding: EdgeInsets.symmetric(vertical: 10)),
                       child: Text(
                         _currentUser.user.nis,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
                     ),
                     const SizedBox(
@@ -165,10 +160,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                           contentPadding: EdgeInsets.symmetric(vertical: 10)),
                       child: Text(
                         _currentUser.user.nama,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
                     ),
                     const SizedBox(
@@ -181,10 +173,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                           contentPadding: EdgeInsets.symmetric(vertical: 10)),
                       child: Text(
                         '${_currentUser.user.tmpt_lahir}, ${_currentUser.user.tgl_lahir}',
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
                     ),
                     const SizedBox(
@@ -203,10 +192,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                             Expanded(
                               child: Text(
                                 _currentUser.user.alamat,
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.black,
-                                ),
+                                style: Theme.of(context).textTheme.labelLarge,
                               ),
                             ),
                             const Icon(Icons.edit)
@@ -230,10 +216,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                             Expanded(
                               child: Text(
                                 _currentUser.user.phone,
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.black,
-                                ),
+                                style: Theme.of(context).textTheme.labelLarge,
                               ),
                             ),
                             const Icon(Icons.edit)
