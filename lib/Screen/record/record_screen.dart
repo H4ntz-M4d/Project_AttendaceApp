@@ -23,6 +23,7 @@ import 'package:sidebarx/sidebarx.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:http/http.dart' as http;
 
+
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
 
@@ -238,6 +239,7 @@ class _UserCardState extends State<UserCard> {
   void initState() {
     super.initState();
     data = getCountRecordsInfo();
+
   }
 
   Future<List<String>> getCountRecordsInfo() async {
