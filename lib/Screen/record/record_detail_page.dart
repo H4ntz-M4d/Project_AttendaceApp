@@ -20,8 +20,10 @@ class RecordDetailPage extends StatefulWidget {
 }
 
 class _RecordDetailPageState extends State<RecordDetailPage> {
-  final tglLahirController = TextEditingController();
+  final monthYearController = TextEditingController();
   DateTime selectedDate = DateTime.now();
+  late Future<List<int>> newFuture;
+  String displayText = "Grafik Total Absensi";
 
   Future<List<int>> getCountRecordsInfo() async {
     try {
@@ -74,10 +76,33 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        tglLahirController.text = DateFormat('MM-yyyy', 'id_ID')
+        monthYearController.text = DateFormat('MMMM yyyy', 'id_ID')
             .format(picked); // Format tanggal untuk Indonesia
       });
     }
+  }
+
+  Future<List<int>> getCountMonthRecordsInfo() async {
+    try {
+      Siswa? siswa = await RememberUserPrefs.readUserInfo();
+      final results = await http.post(Uri.parse(API.getCountMonthRecords),
+          body: {"nis": siswa?.nis, "date": monthYearController.text.trim()});
+      var resultsDecode = json.decode(results.body)['userData'];
+      return [
+        int.parse(resultsDecode['jumlah_hadir']),
+        int.parse(resultsDecode['jumlah_sakit']),
+        int.parse(resultsDecode['jumlah_izin']),
+        int.parse(resultsDecode['jumlah_alpha']),
+      ];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    newFuture = getCountRecordsInfo();
   }
 
   @override
@@ -96,20 +121,84 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
           ),
           drawer: const DrawerNavigation(),
           body: <Widget>[
+            Center(
+              child: Material(
+                elevation: 5,
+                borderRadius: BorderRadius.circular(20),
+                shadowColor: Colors.black,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: TextFormField(
+                              controller: monthYearController,
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide.none),
+                                filled: true,
+                                fillColor: Theme.of(context)
+                                    .colorScheme
+                                    .tertiaryContainer,
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.calendar_today),
+                                  onPressed: _selectDate,
+                                ),
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 10.0),
+                                // Adjust the padding as needed
+                              ),
+                              textAlignVertical: TextAlignVertical
+                                  .center, // Ensures the text is vertically centered
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Isi Bulan Absensi";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () => setState(() {
+                              newFuture = getCountMonthRecordsInfo();
+                              displayText = monthYearController.text.trim();
+                            }),
+                            child: Text('Submit'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 25,
+            ),
             <Widget>[
               Text(
-                'Grafik Record',
+                displayText,
                 style: Theme.of(context).textTheme.headlineLarge,
                 textAlign: TextAlign.center,
               ),
               FutureBuilder<List<int>>(
-                future: getCountRecordsInfo(),
+                future: newFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
-                  } else if (snapshot.hasData) {
+                  } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                     return PieChartSample3(data: snapshot.data!);
                   } else {
                     return const Text('No data available');
@@ -133,13 +222,13 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
             ),
             <Widget>[
               FutureBuilder<List<int>>(
-                future: getCountRecordsInfo(),
+                future: newFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
-                  } else if (snapshot.hasData) {
+                  } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                     return BarChartRecord(data: snapshot.data!);
                   } else {
                     return const Text('No data available');
@@ -158,48 +247,6 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
                   borderRadius: BorderRadius.circular(20),
                 )
                 .alignment(Alignment.topCenter),
-            const SizedBox(
-              height: 25,
-            ),
-            Center(
-              child: Material(
-                elevation: 5,
-                borderRadius: BorderRadius.circular(20),
-                shadowColor: Colors.black,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize
-                        .min, // Ensures the column takes up only the necessary space
-                    children: [
-                      TextFormField(
-                        controller: tglLahirController,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          filled: true,
-                          fillColor: const Color(0xFFF5F5F5),
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.calendar_today),
-                            onPressed: () {
-                              _selectDate();
-                            },
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Isi Tanggal Lahir";
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
           ].toColumn().parent(page),
         );
       },

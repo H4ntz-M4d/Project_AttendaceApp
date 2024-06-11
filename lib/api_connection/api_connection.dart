@@ -15,4 +15,6 @@ class API {
   static const getTop5Record = "$hostConnect/user/get_top_five_records.php";
   static const getCountTotalRecords =
       "$hostConnect/user/count_total_records.php";
+  static const getCountMonthRecords =
+      "$hostConnect/user/count_month_records.php";
 }

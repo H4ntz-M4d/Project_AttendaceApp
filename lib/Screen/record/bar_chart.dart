@@ -19,7 +19,10 @@ class _BarChart extends StatelessWidget {
           return Text(
               'Error: ${snapshot.error}'); // Tampilkan pesan error jika ada
         } else {
-          int maxData = data.reduce((curr, next) => curr > next ? curr : next);
+          int maxData = data.isNotEmpty
+              ? data.reduce((curr, next) => curr > next ? curr : next)
+              : 0;
+
           return BarChart(
             BarChartData(
               barTouchData: barTouchData,
@@ -170,7 +173,7 @@ class _BarChart extends StatelessWidget {
           x: 0,
           barRods: [
             BarChartRodData(
-              toY: data[0].toDouble(),
+              toY: (data.isNotEmpty) ? data[0].toDouble() : 0,
               gradient: _barsGradient,
             )
           ],
@@ -180,7 +183,7 @@ class _BarChart extends StatelessWidget {
           x: 1,
           barRods: [
             BarChartRodData(
-              toY: data[1].toDouble(),
+              toY: (data.isNotEmpty) ? data[1].toDouble() : 0,
               gradient: _barsGradient2,
             )
           ],
@@ -190,7 +193,7 @@ class _BarChart extends StatelessWidget {
           x: 2,
           barRods: [
             BarChartRodData(
-              toY: data[2].toDouble(),
+              toY: (data.isNotEmpty) ? data[2].toDouble() : 0,
               gradient: _barsGradient3,
             )
           ],
@@ -200,7 +203,7 @@ class _BarChart extends StatelessWidget {
           x: 3,
           barRods: [
             BarChartRodData(
-              toY: data[3].toDouble(),
+              toY: (data.isNotEmpty) ? data[3].toDouble() : 0,
               gradient: _barsGradient4,
             )
           ],

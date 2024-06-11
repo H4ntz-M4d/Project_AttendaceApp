@@ -66,6 +66,10 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
+        labelLarge: TextStyle(
+          color: Color.fromARGB(200, 0, 0, 0),
+          fontSize: 16,
+        ),
         labelMedium: TextStyle(
           color: Color.fromARGB(200, 255, 255, 255),
           fontSize: 12,
@@ -128,6 +132,10 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
         color: Color.fromARGB(200, 255, 255, 255),
         fontSize: 18,
         fontWeight: FontWeight.bold,
+      ),
+      labelLarge: TextStyle(
+        color: Color.fromARGB(200, 255, 255, 255),
+        fontSize: 16,
       ),
       labelMedium: TextStyle(
         color: Color.fromARGB(200, 0, 0, 0),

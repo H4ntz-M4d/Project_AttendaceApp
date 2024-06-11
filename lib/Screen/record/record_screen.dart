@@ -318,7 +318,7 @@ class _UserCardState extends State<UserCard> {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
       },
-      child: const Text("Lihat Detail >>"),
+      child: const Text("Lihat Profil >>"),
       style: ElevatedButton.styleFrom(side: BorderSide.none),
     );
   }
@@ -332,7 +332,7 @@ class _UserCardState extends State<UserCard> {
           return CircularProgressIndicator(); // atau widget loading lainnya
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
-        } else {
+        } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -351,6 +351,8 @@ class _UserCardState extends State<UserCard> {
                 shadowColor: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(20),
               );
+        } else {
+          return const Text('No data available');
         }
       },
     );
