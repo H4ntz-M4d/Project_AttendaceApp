@@ -69,7 +69,7 @@ class AboutScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(
-                      height: 16), // Add spacing between text and icons
+                      height: 14), // Add spacing between text and icons
                   Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -83,25 +83,35 @@ class AboutScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(
-                          width: 5,
+                          width: 2,
                         ),
                         Link(
                           uri: igPolinemaPamekasan,
                           target: LinkTarget.defaultTarget,
                           builder: (context, openLink) => TextButton(
                             onPressed: openLink,
-                            child: const Icon(Icons.social_distance),
+                            child: Container(
+                              height: 20,
+                              child: Image.asset(
+                                'images/instagram.png',
+                                color: Colors.blue,),
+                            )
+                            )
                           ),
-                        ),
                         const SizedBox(
-                          width: 5,
+                          width: 2,
                         ),
                         Link(
                           uri: noHp,
                           target: LinkTarget.defaultTarget,
                           builder: (context, openLink) => TextButton(
                             onPressed: openLink,
-                            child: const Icon(Icons.phone),
+                            child: Container(
+                              height: 20,
+                              child: Image.asset(
+                                'images/whatsapp.png',
+                                color: Colors.blue,),
+                            )
                           ),
                         ),
                       ],
