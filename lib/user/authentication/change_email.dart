@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
+import 'package:project_attendance_app/user/fragments/account_screen.dart';
 import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,8 +22,16 @@ class _ChangeEmail extends State<ChangeEmail> {
       List.generate(4, (index) => TextEditingController());
   final TextEditingController oldEmailController = TextEditingController();
   final TextEditingController newEmailController = TextEditingController();
+  bool _isButtonDisabled = false;
+  bool _isLoading = false;
+  String _buttonText = 'Dapatkan Kode';
 
   Future<void> getVerificationCode() async {
+    setState(() {
+      _isButtonDisabled = true;
+      _isLoading = true;
+    });
+
     final String nis = _currentUser.user.nis;
     final response = await http.post(
       Uri.parse(API.sendEmailCode),
@@ -32,19 +41,73 @@ class _ChangeEmail extends State<ChangeEmail> {
       },
     );
 
+    setState(() {
+      _isLoading = false;
+    });
+
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(responseData['message'])),
-      );
-    } else {
+      if (responseData["status"] == "success") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
+        setState(() {
+          _buttonText = 'Terkirim';
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
+        setState(() {
+          _buttonText = 'Tunggu';
+        });
+
+        Future.delayed(Duration(seconds: 5), () {
+          setState(() {
+            _isButtonDisabled = false;
+            _buttonText = 'Dapatkan Kode';
+          });
+        });
+      }
+    }else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gagal mengirim kode verifikasi.')),
       );
+
+      setState(() {
+        _buttonText = 'Tunggu';
+      });
+
+      // Disable button for 5 seconds
+      Future.delayed(Duration(seconds: 5), () {
+        setState(() {
+          _isButtonDisabled = false;
+          _buttonText = 'Dapatkan Kode';
+        });
+      });
     }
   }
 
+   void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
+  void _hideLoadingDialog(BuildContext context) {
+    Navigator.of(context).pop();
+  }
+
+
   Future<void> changeEmail() async {
+    _showLoadingDialog(context);
+
     final String nis = _currentUser.user.nis;
     final verificationcode =
         _kode.map((controller) => controller.text).join('');
@@ -56,11 +119,15 @@ class _ChangeEmail extends State<ChangeEmail> {
         'email_baru': newEmailController.text
       },
     );
+    
+    _hideLoadingDialog(context);
+
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(responseData['message'])),
       );
+       Get.to(() => const AccountScreen());
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gagal mengubah email.')),
@@ -100,20 +167,20 @@ class _ChangeEmail extends State<ChangeEmail> {
               ),
               const SizedBox(height: 20),
               Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextFormField(
-                      controller: oldEmailController,
-                      decoration: const InputDecoration(
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Color(0xFFF5F5F5),
-                      ),
-                    )
-                  ],
-                ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    controller: oldEmailController,
+                    decoration: const InputDecoration(
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: Color(0xFFF5F5F5),
+                    ),
+                  )
+                ],
+              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -122,60 +189,76 @@ class _ChangeEmail extends State<ChangeEmail> {
                     height: 30,
                     width: 120,
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: _isButtonDisabled ? Colors.grey : Colors.blue,
                       border: Border.all(width: 0.1),
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: OutlinedButton(
-                      onPressed: getVerificationCode,
-                      child: const Center(
-                        child: Text(
-                          'Dapatkan Kode',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
-                          ),
-                        ),
+                      onPressed: _isButtonDisabled ? null : getVerificationCode,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (_isLoading)
+                            Container(
+                              height: 15,
+                              width: 15,
+                              margin: EdgeInsets.only(right: 10),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.0,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                          if (!_isLoading)
+                            Text(
+                              _buttonText,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
+                            ),
+                        ],
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side:
+                            BorderSide.none, // Hapus border pada OutlinedButton
                       ),
                     ),
                   ),
                   const SizedBox(width: 40),
                   for (int i = 0; i < 4; i++)
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              width: 40,
-                              child: TextFormField(
-                                controller: _kode[i],
-                                textAlign: TextAlign.center,
-                                maxLength: 1,
-                                keyboardType: TextInputType.number,
-                                textInputAction: i < 3
-                                    ? TextInputAction.next
-                                    : TextInputAction.done,
-                                onChanged: (value) {
-                                  if (value.length == 1) {
-                                    FocusScope.of(context).nextFocus();
-                                  } else {
-                                    FocusScope.of(context).previousFocus();
-                                  }
-                                },
-                                decoration: const InputDecoration(
-                                  counterText: "",
-                                  contentPadding:
-                                      EdgeInsets.symmetric(vertical: 10),
-                                  border: OutlineInputBorder(),
-                                  filled: true,
-                                  fillColor: Color(0xFFF5F5F5),
-                                ),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: 40,
+                            child: TextFormField(
+                              controller: _kode[i],
+                              textAlign: TextAlign.center,
+                              maxLength: 1,
+                              keyboardType: TextInputType.number,
+                              textInputAction: i < 3
+                                  ? TextInputAction.next
+                                  : TextInputAction.done,
+                              onChanged: (value) {
+                                if (value.length == 1) {
+                                  FocusScope.of(context).nextFocus();
+                                } else {
+                                  FocusScope.of(context).previousFocus();
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                counterText: "",
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 10),
+                                border: OutlineInputBorder(),
+                                filled: true,
+                                fillColor: Color(0xFFF5F5F5),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                 ],
@@ -187,20 +270,20 @@ class _ChangeEmail extends State<ChangeEmail> {
               ),
               const SizedBox(height: 20),
               Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextFormField(
-                      controller: newEmailController,
-                      decoration: const InputDecoration(
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Color(0xFFF5F5F5),
-                      ),
-                    )
-                  ],
-                ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    controller: newEmailController,
+                    decoration: const InputDecoration(
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: Color(0xFFF5F5F5),
+                    ),
+                  )
+                ],
+              ),
               const SizedBox(height: 60),
               Container(
                 height: 50,
