@@ -4,6 +4,7 @@ import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
 import 'package:project_attendance_app/Screen/record/record_screen.dart';
 import 'package:project_attendance_app/switch.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
+import 'package:project_attendance_app/user/fragments/about_screen.dart';
 import 'package:project_attendance_app/user/fragments/account_screen.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
@@ -78,6 +79,10 @@ class DrawerNavigation extends StatelessWidget {
             leading: Icon(Icons.info),
             title: Text('Tentang Kami'),
             onTap: () {
+              Navigator.pop(context);
+              Future.delayed(const Duration(milliseconds: 500), () {
+                Get.to(() => AboutScreen());
+              });
               // Add your logic here to navigate to Drafts page
             },
           ),
