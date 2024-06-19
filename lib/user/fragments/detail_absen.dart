@@ -37,8 +37,12 @@ class _DetailAbsenState extends State<DetailAbsen> {
 
   Future<void> _fetchEvents() async {
     final String nis = _currentUser.user.nis;
-    final response =
-        await http.post(Uri.parse(API.getRecord), body: {'nis': nis});
+    final response = await http.post(
+      Uri.parse(API.getRecord), 
+      body: {
+        'nis': nis
+      }
+    );
     print("Response status: ${response.statusCode}");
     print("Response body: ${response.body}");
     if (response.statusCode == 200) {

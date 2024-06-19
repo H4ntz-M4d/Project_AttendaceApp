@@ -89,7 +89,7 @@ class _ChangeEmail extends State<ChangeEmail> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left: 15.0),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -99,9 +99,7 @@ class _ChangeEmail extends State<ChangeEmail> {
                 style: TextStyle(fontSize: 20, color: Colors.black),
               ),
               const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(right: 25),
-                child: Column(
+              Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextFormField(
@@ -116,7 +114,6 @@ class _ChangeEmail extends State<ChangeEmail> {
                     )
                   ],
                 ),
-              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -143,40 +140,42 @@ class _ChangeEmail extends State<ChangeEmail> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 55),
+                  const SizedBox(width: 40),
                   for (int i = 0; i < 4; i++)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: 40,
-                            child: TextFormField(
-                              controller: _kode[i],
-                              textAlign: TextAlign.center,
-                              maxLength: 1,
-                              keyboardType: TextInputType.number,
-                              textInputAction: i < 3
-                                  ? TextInputAction.next
-                                  : TextInputAction.done,
-                              onChanged: (value) {
-                                if (value.length == 1) {
-                                  FocusScope.of(context).nextFocus();
-                                } else {
-                                  FocusScope.of(context).previousFocus();
-                                }
-                              },
-                              decoration: const InputDecoration(
-                                counterText: "",
-                                contentPadding:
-                                    EdgeInsets.symmetric(vertical: 10),
-                                border: OutlineInputBorder(),
-                                filled: true,
-                                fillColor: Color(0xFFF5F5F5),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              width: 40,
+                              child: TextFormField(
+                                controller: _kode[i],
+                                textAlign: TextAlign.center,
+                                maxLength: 1,
+                                keyboardType: TextInputType.number,
+                                textInputAction: i < 3
+                                    ? TextInputAction.next
+                                    : TextInputAction.done,
+                                onChanged: (value) {
+                                  if (value.length == 1) {
+                                    FocusScope.of(context).nextFocus();
+                                  } else {
+                                    FocusScope.of(context).previousFocus();
+                                  }
+                                },
+                                decoration: const InputDecoration(
+                                  counterText: "",
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 10),
+                                  border: OutlineInputBorder(),
+                                  filled: true,
+                                  fillColor: Color(0xFFF5F5F5),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                 ],
@@ -187,9 +186,7 @@ class _ChangeEmail extends State<ChangeEmail> {
                 style: TextStyle(fontSize: 20, color: Colors.black),
               ),
               const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(right: 25),
-                child: Column(
+              Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextFormField(
@@ -204,7 +201,6 @@ class _ChangeEmail extends State<ChangeEmail> {
                     )
                   ],
                 ),
-              ),
               const SizedBox(height: 60),
               Container(
                 height: 50,
