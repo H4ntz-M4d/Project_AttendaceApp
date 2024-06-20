@@ -7,7 +7,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
-import 'package:project_attendance_app/user/userPreferences/current_user.dart';
+import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:project_attendance_app/user/model/event_list.dart';
 import 'package:http/http.dart' as http;
@@ -24,25 +24,21 @@ class _DetailAbsenState extends State<DetailAbsen> {
   List<RecordAbsen> _selectedEvents = [];
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
-  final CurrentUser _currentUser = Get.put(CurrentUser());
+  final CurrentSiswa _currentUser = Get.put(CurrentSiswa());
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
     _currentUser.getUserInfo().then((_) {
-    _fetchEvents();
+      _fetchEvents();
     });
   }
 
   Future<void> _fetchEvents() async {
     final String nis = _currentUser.user.nis;
-    final response = await http.post(
-      Uri.parse(API.getRecord), 
-      body: {
-        'nis': nis
-      }
-    );
+    final response =
+        await http.post(Uri.parse(API.getRecord), body: {'nis': nis});
     print("Response status: ${response.statusCode}");
     print("Response body: ${response.body}");
     if (response.statusCode == 200) {
@@ -53,8 +49,10 @@ class _DetailAbsenState extends State<DetailAbsen> {
             event.clear();
             for (var eventJson in data['events']) {
               RecordAbsen recordAbsen = RecordAbsen.fromJson(eventJson);
-              DateTime eventDate = DateTime.parse(eventJson['kalender_absensi']);
-              DateTime dateWithoutTime = DateTime(eventDate.year, eventDate.month, eventDate.day);
+              DateTime eventDate =
+                  DateTime.parse(eventJson['kalender_absensi']);
+              DateTime dateWithoutTime =
+                  DateTime(eventDate.year, eventDate.month, eventDate.day);
 
               if (event[dateWithoutTime] == null) {
                 event[dateWithoutTime] = [];
@@ -86,20 +84,20 @@ class _DetailAbsenState extends State<DetailAbsen> {
     return events;
   }
 
-    Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
+  Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
     if (events.isEmpty) return const SizedBox();
 
     // Display a single marker for dates with events
     return Container(
-        alignment: Alignment.bottomCenter,
-        decoration: BoxDecoration(
-          color: Colors.blueGrey, // Choose a default color for the marker
-          shape: BoxShape.circle,
-        ),
-        width: 8.0,
-        height: 8.0,
-        margin: const EdgeInsets.symmetric(horizontal: 0.5),
-      );
+      alignment: Alignment.bottomCenter,
+      decoration: BoxDecoration(
+        color: Colors.blueGrey, // Choose a default color for the marker
+        shape: BoxShape.circle,
+      ),
+      width: 8.0,
+      height: 8.0,
+      margin: const EdgeInsets.symmetric(horizontal: 0.5),
+    );
   }
 
   @override
@@ -180,18 +178,18 @@ class _DetailAbsenState extends State<DetailAbsen> {
                     color: Color.fromARGB(255, 0, 141, 218),
                     shape: BoxShape.circle,
                   ),
-                  todayDecoration:const BoxDecoration(
+                  todayDecoration: const BoxDecoration(
                     color: Color.fromARGB(255, 53, 114, 239),
                     shape: BoxShape.circle,
                   ),
-                  selectedTextStyle:const  TextStyle(color: Colors.white),
+                  selectedTextStyle: const TextStyle(color: Colors.white),
                   defaultTextStyle: GoogleFonts.lato(
                     textStyle: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  todayTextStyle:const TextStyle(color: Colors.white),
+                  todayTextStyle: const TextStyle(color: Colors.white),
                 ),
                 headerStyle: HeaderStyle(
                   titleCentered: true,

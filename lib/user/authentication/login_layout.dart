@@ -6,12 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_attendance_app/Screen/record/record_screen.dart';
 import 'package:project_attendance_app/user/authentication/forgot_password.dart';
+import 'package:project_attendance_app/user/model/guru.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
-import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:project_attendance_app/user/model/siswa.dart';
+import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
+import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -55,9 +58,13 @@ class _LoginPage extends State<LoginPage> {
             print("$key: $value");
           });
 
-          Siswa userInfo = Siswa.fromJson(resBodyOfLogin["userData"]);
-
-          await RememberUserPrefs.storeUserInfo(userInfo);
+          if (resBodyOfLogin["userData"]["role"] == "guru") {
+            User userInfo = Guru.fromJson(resBodyOfLogin["userData"]);
+            await RememberUserPrefs.storeUserInfo(userInfo);
+          } else if (resBodyOfLogin["userData"]["role"] == "siswa") {
+            User userInfo = Siswa.fromJson(resBodyOfLogin["userData"]);
+            await RememberUserPrefs.storeUserInfo(userInfo);
+          }
 
           Get.offAll(() => const RecordPage());
         } else {

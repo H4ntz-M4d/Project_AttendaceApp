@@ -8,6 +8,7 @@ import 'package:project_attendance_app/user/fragments/about_screen.dart';
 import 'package:project_attendance_app/user/fragments/account_screen.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
+import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
 class DrawerNavigation extends StatelessWidget {
@@ -16,7 +17,7 @@ class DrawerNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future<void> logout() async {
-      await RememberUserPrefs.clearUserInfo();
+      await RememberSiswaPrefs.clearSiswaInfo();
       await RememberRecordPrefs.clearRememberAbsensi();
       Get.offAll(() => const LoginPage());
     }
