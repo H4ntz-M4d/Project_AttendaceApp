@@ -11,11 +11,11 @@ class RememberSiswaPrefs {
     await preferences.setString("currentsiswa", siswaJsonData);
   }
 
-  static Future<void> profileSiswaInfo(ProfileUser siswaInfo) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String siswaJsonData = jsonEncode(siswaInfo.toJson());
-    await preferences.setString("currentsiswa", siswaJsonData);
-  }
+  // static Future<void> profileSiswaInfo(ProfileUser siswaInfo) async {
+  //   SharedPreferences preferences = await SharedPreferences.getInstance();
+  //   String siswaJsonData = jsonEncode(siswaInfo.toJson());
+  //   await preferences.setString("currentsiswa", siswaJsonData);
+  // }
 
   static Future<Siswa?> readSiswaInfo() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();

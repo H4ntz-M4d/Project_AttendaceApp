@@ -1,62 +1,68 @@
 import 'dart:convert';
-import 'package:get/get.dart';
+
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/user/model/guru.dart';
-import 'package:project_attendance_app/user/model/siswa.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class CurrentUser extends GetxController {
-  Rx<User?> _currentUser = Rx<User?>(null);
+class CurrentSiswa extends GetxController {
+  
+  final Rx<User> _currentUser = Guru(
+          nip: '',
+          nik: '',
+          nuptk: '',
+          nama: '',
+          jkel: '',
+          alamat: '',
+          tmpt_lahir: '',
+          tgl_lahir: '',
+          guru_status: '',
+          phone: '',
+          agama: '',
+          guru_password: '',
+          guru_email: '',
+          verifikasi_kode: '',
+          role: '')
+      .obs;
 
-  User get user => _currentUser.value!;
+  User get user => _currentUser.value;
 
-  @override
-  void onInit() {
-    super.onInit();
-    getUserInfo();
-  }
-
-  Future<void> getUserInfo() async {
+  getUserInfo() async {
     User? getUserInfoFromLocalStorage = await RememberUserPrefs.readUserInfo();
-
     if (getUserInfoFromLocalStorage != null) {
-      if (getUserInfoFromLocalStorage is Guru) {
-        _currentUser.value = Guru.fromJson(getUserInfoFromLocalStorage.toJson());
-      } else if (getUserInfoFromLocalStorage is Siswa) {
-        _currentUser.value = Siswa.fromJson(getUserInfoFromLocalStorage.toJson());
-      }
+      _currentUser.value = getUserInfoFromLocalStorage;
     } else {
-      print("No user info found in local storage");
+      // Handle the case when getUserInfoFromLocalStorage is null
+      // For example, you could set a default value or display an error message
     }
   }
 
-  Future<void> updateUserInfo(User updatedUser) async {
+  updateUserInfo(User updatedUser) async {
     _currentUser.value = updatedUser;
     await RememberUserPrefs.storeUserInfo(updatedUser);
   }
 
   Future<void> syncUserInfo() async {
     try {
+      // Cek apakah _currentUser adalah instansi dari Siswa atau Guru
       String id = '';
       if (_currentUser.value is Guru) {
         id = (_currentUser.value as Guru).nip;
-      } else if (_currentUser.value is Siswa) {
-        id = (_currentUser.value as Siswa).nis;
       }
 
       var res = await http.get(Uri.parse('${API.getData}?id=$id'));
       if (res.statusCode == 200) {
         var resBody = jsonDecode(res.body);
         if (resBody['success'] == true) {
+          // Periksa tipe data user yang diupdate dan instansiasi yang sesuai
           User updatedUser;
           if (resBody['userData']['role'] == 'guru') {
             updatedUser = Guru.fromJson(resBody['userData']);
-          } else {
-            updatedUser = Siswa.fromJson(resBody['userData']);
-          }
-          updateUserInfo(updatedUser);
+            updateUserInfo(updatedUser);
+          } 
         }
       }
     } catch (error) {

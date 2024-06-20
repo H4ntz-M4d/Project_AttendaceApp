@@ -8,6 +8,8 @@ import 'package:project_attendance_app/Screen/record/chart.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/coba.dart';
 import 'package:project_attendance_app/user/model/siswa.dart';
+import 'package:project_attendance_app/user/model/user.dart';
+import 'package:project_attendance_app/user/service/user_service.dart';
 import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -25,23 +27,6 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
   DateTime selectedDate = DateTime.now();
   late Future<List<int>> newFuture;
   String displayText = "Grafik Total Absensi";
-
-  Future<List<int>> getCountRecordsInfo() async {
-    try {
-      Siswa? siswa = await RememberSiswaPrefs.readSiswaInfo();
-      final results = await http
-          .post(Uri.parse(API.getCountTotalRecords), body: {"nis": siswa?.nis});
-      var resultsDecode = json.decode(results.body)['userData'];
-      return [
-        int.parse(resultsDecode['jumlah_hadir']),
-        int.parse(resultsDecode['jumlah_sakit']),
-        int.parse(resultsDecode['jumlah_izin']),
-        int.parse(resultsDecode['jumlah_alpha']),
-      ];
-    } catch (e) {
-      return [];
-    }
-  }
 
   Future<void> _selectDate() async {
     final DateTime? picked = await showMonthYearPicker(
@@ -83,27 +68,12 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
     }
   }
 
-  Future<List<int>> getCountMonthRecordsInfo() async {
-    try {
-      Siswa? siswa = await RememberSiswaPrefs.readSiswaInfo();
-      final results = await http.post(Uri.parse(API.getCountMonthRecords),
-          body: {"nis": siswa?.nis, "date": monthYearController.text.trim()});
-      var resultsDecode = json.decode(results.body)['userData'];
-      return [
-        int.parse(resultsDecode['jumlah_hadir']),
-        int.parse(resultsDecode['jumlah_sakit']),
-        int.parse(resultsDecode['jumlah_izin']),
-        int.parse(resultsDecode['jumlah_alpha']),
-      ];
-    } catch (e) {
-      return [];
-    }
-  }
+  
 
   @override
   void initState() {
     super.initState();
-    newFuture = getCountRecordsInfo();
+    newFuture = UserService.getCountRecordsInt();
   }
 
   @override
@@ -171,7 +141,7 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
                           SizedBox(width: 8),
                           ElevatedButton(
                             onPressed: () => setState(() {
-                              newFuture = getCountMonthRecordsInfo();
+                              newFuture = UserService.getCountMonthRecordsInfo(monthYearController.text.trim());
                               displayText = monthYearController.text.trim();
                             }),
                             child: Text('Submit'),

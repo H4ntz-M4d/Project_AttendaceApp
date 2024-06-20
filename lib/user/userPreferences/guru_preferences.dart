@@ -3,7 +3,7 @@ import 'package:project_attendance_app/user/model/guru.dart';
 import 'package:project_attendance_app/user/model/profil_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RememberUserPrefs {
+class RememberGuruPrefs {
   //save user info
   static Future<void> storeGuruInfo(Guru userInfo) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -11,11 +11,11 @@ class RememberUserPrefs {
     await preferences.setString("currentUser", userJsonData);
   }
 
-  static Future<void> profileGuruInfo(ProfileUser userInfo) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String userJsonData = jsonEncode(userInfo.toJson());
-    await preferences.setString("currentUser", userJsonData);
-  }
+  // static Future<void> profileGuruInfo(ProfileUser userInfo) async {
+  //   SharedPreferences preferences = await SharedPreferences.getInstance();
+  //   String userJsonData = jsonEncode(userInfo.toJson());
+  //   await preferences.setString("currentUser", userJsonData);
+  // }
 
   static Future<Guru?> readGuruInfo() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
