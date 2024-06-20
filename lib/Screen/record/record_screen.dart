@@ -13,16 +13,19 @@ import 'package:project_attendance_app/coba.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/detail_absen.dart';
 import 'package:project_attendance_app/user/fragments/profile_screen.dart';
+import 'package:project_attendance_app/user/model/guru.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
+import 'package:project_attendance_app/user/model/siswa.dart';
 import 'package:project_attendance_app/user/model/user.dart';
-import 'package:project_attendance_app/user/userPreferences/current_user.dart';
+import 'package:project_attendance_app/user/service/guru_service.dart';
+import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
+import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:http/http.dart' as http;
-
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -134,23 +137,42 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  final CurrentUser _rememberCurrentUser = Get.put(CurrentUser());
+  final CurrentSiswa _rememberCurrentSiswa = Get.put(CurrentSiswa());
 
   Future<Map<String, dynamic>> getUser() async {
     final results = await Future.wait([
       RememberUserPrefs.readUserInfo(),
     ]);
 
-    Object user = results[0] ??
-        Siswa(
-            nis: '',
-            siswaPassword: '',
-            nama: '',
-            tmpt_lahir: '',
-            tgl_lahir: '',
-            alamat: '',
-            phone: '');
+    print(results);
 
+    Object user = results[0] ??
+        // Siswa(
+        //     nis: '',
+        //     siswaPassword: '',
+        //     nama: '',
+        //     tmpt_lahir: '',
+        //     tgl_lahir: '',
+        //     alamat: '',
+        //     phone: '',
+        //     role: '');
+        Guru(
+          nip: '',
+          nik: '',
+          nuptk: '',
+          nama: '',
+          jkel: '',
+          alamat: '',
+          tmpt_lahir: '',
+          tgl_lahir: '',
+          guru_status: '',
+          phone: '',
+          agama: '',
+          guru_password: '',
+          guru_email: '',
+          verifikasi_kode: '',
+          role: '',
+        );
     return {
       'user': user,
     };
@@ -169,9 +191,9 @@ class _UserPageState extends State<UserPage> {
         .scrollable();
 
     return GetBuilder(
-        init: CurrentUser(),
-        initState: (CurrentUser) {
-          _rememberCurrentUser.getUserInfo();
+        init: CurrentSiswa(),
+        initState: (CurrentSiswa) {
+          _rememberCurrentSiswa.getUserInfo();
         },
         builder: (controller) {
           return FutureBuilder<Map<String, dynamic>>(
@@ -184,7 +206,6 @@ class _UserPageState extends State<UserPage> {
               } else if (!snapshot.hasData) {
                 return const Center(child: Text('No data available'));
               } else {
-                Siswa user = snapshot.data!['user'];
                 return BlocProvider(
                   create: (context) => RecordBloc()..add(LoadRecordEvent()),
                   child: BlocBuilder<RecordBloc, RecordState>(
@@ -199,14 +220,14 @@ class _UserPageState extends State<UserPage> {
                               Theme.of(context).scaffoldBackgroundColor,
                           body: <Widget>[
                             UserCard(
-                              user: user,
+                              user: snapshot.data!['user'],
                             ),
                             ActionsRow(
                               onActionSelected: (actionName) =>
                                   handleActionSelected(context, actionName),
                             ),
                             Settings(
-                              nis: user.nis,
+                              user: snapshot.data!['user'],
                             ),
                           ].toColumn().parent(page),
                         );
@@ -224,7 +245,7 @@ class _UserPageState extends State<UserPage> {
 }
 
 class UserCard extends StatefulWidget {
-  final Siswa user;
+  final User user;
 
   UserCard({Key? key, required this.user}) : super(key: key);
 
@@ -238,27 +259,24 @@ class _UserCardState extends State<UserCard> {
   @override
   void initState() {
     super.initState();
-    data = getCountRecordsInfo();
-
+    data = UserService.getCountRecordsInfo(widget.user);
   }
 
-  Future<List<String>> getCountRecordsInfo() async {
-    try {
-      final results = await http.post(Uri.parse(API.getCountTotalRecords),
-          body: {"nis": widget.user.nis});
-      var resultsDecode = json.decode(results.body)['userData'];
-      return [
-        resultsDecode['jumlah_hadir'],
-        resultsDecode['jumlah_sakit'],
-        resultsDecode['jumlah_izin'],
-        resultsDecode['jumlah_alpha'],
-      ];
-    } catch (e) {
-      return [];
+  Widget _buildUserRow(User user) {
+    String id;
+    String name;
+
+    if (user is Guru) {
+      id = user.nip;
+      name = user.nama;
+    } else if (user is Siswa) {
+      id = user.nis;
+      name = user.nama;
+    } else {
+      // Handle unknown user type
+      throw Exception('Unknown user type');
     }
-  }
 
-  Widget _buildUserRow(Siswa user) {
     return Row(
       children: [
         GestureDetector(
@@ -274,11 +292,11 @@ class _UserCardState extends State<UserCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              user.nama,
+              name,
               style: Theme.of(context).textTheme.titleLarge,
             ).padding(bottom: 5),
             Text(
-              user.nis,
+              id,
               style: Theme.of(context).textTheme.labelMedium,
             ),
           ],
@@ -462,28 +480,13 @@ const List<SettingsItemModel> settingsItems = [
 ];
 
 class Settings extends StatelessWidget {
-  String nis;
-  Settings({super.key, required this.nis});
-
-  Future<List<RecordAbsen>> getTopFiveRecords() async {
-    try {
-      final results =
-          await http.post(Uri.parse(API.getTop5Record), body: {"nis": nis});
-      var resultsDecode = json.decode(results.body);
-      List<RecordAbsen> topFiveRecords = [];
-      for (var record in resultsDecode['userData']) {
-        topFiveRecords.add(RecordAbsen.fromJson(record));
-      }
-      return topFiveRecords;
-    } catch (e) {
-      return [];
-    }
-  }
+  User user;
+  Settings({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<RecordAbsen>>(
-      future: getTopFiveRecords(),
+      future: UserService.getTopFiveRecords(user),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator(); // Atau widget lain untuk menampilkan proses loading

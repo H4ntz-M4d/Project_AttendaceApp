@@ -4,8 +4,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
-import 'package:project_attendance_app/user/model/user.dart';
-import 'package:project_attendance_app/user/userPreferences/current_user.dart';
+import 'package:project_attendance_app/user/model/siswa.dart';
+import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
 import 'package:project_attendance_app/user/userPreferences/edit_Photo.dart';
 import 'package:project_attendance_app/user/userPreferences/edit_alamat.dart';
 import 'package:project_attendance_app/user/model/profil_item.dart';
@@ -24,7 +24,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreen extends State<ProfileScreen> {
-  final CurrentUser _currentUser = Get.put(CurrentUser());
+  final CurrentSiswa _currentUser = Get.put(CurrentSiswa());
 
   String _alamat = ''; // Tambahkan variabel name
   String _phone = ''; // Tambahkan variabel phone
@@ -65,6 +65,7 @@ class _ProfileScreen extends State<ProfileScreen> {
             tgl_lahir: _currentUser.user.tgl_lahir,
             alamat: alamat,
             phone: phone,
+            role: _currentUser.user.role,
           );
 
           _currentUser.updateUserInfo(updatedUser);

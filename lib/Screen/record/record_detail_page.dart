@@ -7,7 +7,8 @@ import 'package:project_attendance_app/Screen/record/bar_chart.dart';
 import 'package:project_attendance_app/Screen/record/chart.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/coba.dart';
-import 'package:project_attendance_app/user/model/user.dart';
+import 'package:project_attendance_app/user/model/siswa.dart';
+import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:http/http.dart' as http;
@@ -27,7 +28,7 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
 
   Future<List<int>> getCountRecordsInfo() async {
     try {
-      Siswa? siswa = await RememberUserPrefs.readUserInfo();
+      Siswa? siswa = await RememberSiswaPrefs.readSiswaInfo();
       final results = await http
           .post(Uri.parse(API.getCountTotalRecords), body: {"nis": siswa?.nis});
       var resultsDecode = json.decode(results.body)['userData'];
@@ -84,7 +85,7 @@ class _RecordDetailPageState extends State<RecordDetailPage> {
 
   Future<List<int>> getCountMonthRecordsInfo() async {
     try {
-      Siswa? siswa = await RememberUserPrefs.readUserInfo();
+      Siswa? siswa = await RememberSiswaPrefs.readSiswaInfo();
       final results = await http.post(Uri.parse(API.getCountMonthRecords),
           body: {"nis": siswa?.nis, "date": monthYearController.text.trim()});
       var resultsDecode = json.decode(results.body)['userData'];

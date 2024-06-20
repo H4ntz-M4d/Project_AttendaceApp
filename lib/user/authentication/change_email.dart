@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/user/fragments/account_screen.dart';
-import 'package:project_attendance_app/user/userPreferences/current_user.dart';
+import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
 import 'package:http/http.dart' as http;
 
 class ChangeEmail extends StatefulWidget {
@@ -17,7 +17,7 @@ class ChangeEmail extends StatefulWidget {
 }
 
 class _ChangeEmail extends State<ChangeEmail> {
-  final CurrentUser _currentUser = Get.put(CurrentUser());
+  final CurrentSiswa _currentUser = Get.put(CurrentSiswa());
   final List<TextEditingController> _kode =
       List.generate(4, (index) => TextEditingController());
   final TextEditingController oldEmailController = TextEditingController();
@@ -69,7 +69,7 @@ class _ChangeEmail extends State<ChangeEmail> {
           });
         });
       }
-    }else {
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gagal mengirim kode verifikasi.')),
       );
@@ -88,7 +88,7 @@ class _ChangeEmail extends State<ChangeEmail> {
     }
   }
 
-   void _showLoadingDialog(BuildContext context) {
+  void _showLoadingDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -104,7 +104,6 @@ class _ChangeEmail extends State<ChangeEmail> {
     Navigator.of(context).pop();
   }
 
-
   Future<void> changeEmail() async {
     _showLoadingDialog(context);
 
@@ -119,7 +118,7 @@ class _ChangeEmail extends State<ChangeEmail> {
         'email_baru': newEmailController.text
       },
     );
-    
+
     _hideLoadingDialog(context);
 
     if (response.statusCode == 200) {
@@ -127,7 +126,7 @@ class _ChangeEmail extends State<ChangeEmail> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(responseData['message'])),
       );
-       Get.to(() => const AccountScreen());
+      Get.to(() => const AccountScreen());
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gagal mengubah email.')),

@@ -6,8 +6,8 @@ import "package:project_attendance_app/user/userPreferences/siswa_preference.dar
 import "package:project_attendance_app/user/userPreferences/user_preferences.dart";
 import 'package:http/http.dart' as http;
 
-class CurrentUser extends GetxController {
-  Rx<Siswa> _currentUser = Siswa(
+class CurrentSiswa extends GetxController {
+  Rx<Siswa> _currentSiswa = Siswa(
           nis: '',
           siswaPassword: '',
           nama: '',
@@ -18,13 +18,13 @@ class CurrentUser extends GetxController {
           role: '')
       .obs;
 
-  Siswa get user => _currentUser.value;
+  Siswa get user => _currentSiswa.value;
 
   getUserInfo() async {
     Siswa? getUserInfoFromLocalStorage =
         await RememberSiswaPrefs.readSiswaInfo();
     if (getUserInfoFromLocalStorage != null) {
-      _currentUser.value = getUserInfoFromLocalStorage;
+      _currentSiswa.value = getUserInfoFromLocalStorage;
     } else {
       // Handle the case when getUserInfoFromLocalStorage is null
       // For example, you could set a default value or display an error message
@@ -32,14 +32,14 @@ class CurrentUser extends GetxController {
   }
 
   updateUserInfo(Siswa updatedUser) async {
-    _currentUser.value = updatedUser;
+    _currentSiswa.value = updatedUser;
     await RememberSiswaPrefs.storeSiswaInfo(updatedUser);
   }
 
   Future<void> syncUserInfo() async {
     try {
       var res = await http
-          .get(Uri.parse('${API.getData}?nis=${_currentUser.value.nis}'));
+          .get(Uri.parse('${API.getData}?nis=${_currentSiswa.value.nis}'));
       if (res.statusCode == 200) {
         var resBody = jsonDecode(res.body);
         if (resBody['success'] == true) {

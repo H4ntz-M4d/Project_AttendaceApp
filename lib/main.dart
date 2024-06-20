@@ -6,6 +6,7 @@ import 'package:month_year_picker2/month_year_picker2.dart';
 import 'package:project_attendance_app/Screen/record/record_screen.dart';
 import 'package:project_attendance_app/Screen/splashScreen/splash_layout.dart';
 import 'package:project_attendance_app/bloc/theme_bloc/theme_bloc.dart';
+import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
 void main() {

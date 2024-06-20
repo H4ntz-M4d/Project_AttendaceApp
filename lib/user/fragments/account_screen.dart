@@ -4,7 +4,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_attendance_app/user/authentication/change_email.dart';
 import 'package:project_attendance_app/user/authentication/forgot_password.dart';
-import 'package:project_attendance_app/user/userPreferences/current_user.dart';
+import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -14,7 +14,7 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  final CurrentUser _currentUser = Get.put(CurrentUser());
+  final CurrentSiswa _currentUser = Get.put(CurrentSiswa());
 
   @override
   Widget build(BuildContext context) {
