@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
+import 'package:project_attendance_app/user/model/guru.dart';
 import 'package:project_attendance_app/user/model/profil_item.dart';
 import 'package:flutter/material.dart';
-import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
+import 'package:project_attendance_app/user/model/siswa.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 
 class EditPhone extends StatefulWidget {
   const EditPhone({super.key, required this.editProfile});
@@ -16,7 +18,7 @@ class EditPhone extends StatefulWidget {
 
 class _EditPhoneState extends State<EditPhone> {
   final _phoneController = TextEditingController();
-  final CurrentSiswa _currentUser = Get.put(CurrentSiswa());
+  final CurrentUser _currentUser = Get.put(CurrentUser());
 
   @override
   void dispose() {
@@ -28,8 +30,13 @@ class _EditPhoneState extends State<EditPhone> {
     final newPhone = _phoneController.text;
 
     // Panggil callback untuk mengirim nilai nama dan nomor telepon
-    widget.editProfile(
-        ProfilItem(alamat: _currentUser.user.alamat, noHp: newPhone));
+    if (_currentUser is Guru) {
+      widget.editProfile(ProfilItem(
+          alamat: (_currentUser.user as Guru).alamat, noHp: newPhone));
+    } else if (_currentUser is Siswa) {
+      widget.editProfile(ProfilItem(
+          alamat: (_currentUser.user as Siswa).alamat, noHp: newPhone));
+    } else {}
   }
 
   @override

@@ -63,34 +63,13 @@ class _ProfileScreen extends State<ProfileScreen> {
         if (resBodyOfEdit['success'] == true) {
           Fluttertoast.showToast(msg: "Profil berhasil diperbarui.");
           setState(() {
-            if (user is Guru) {
-              user = Guru(
-                  nip: (user as Guru).nip,
-                  nik: (user as Guru).nik,
-                  nuptk: (user as Guru).nuptk,
-                  nama: (user as Guru).nama,
-                  jkel: (user as Guru).jkel,
-                  alamat: alamat,
-                  tmpt_lahir: (user as Guru).tmpt_lahir,
-                  tgl_lahir: (user as Guru).tgl_lahir,
-                  guru_status: (user as Guru).guru_status,
-                  phone: phone,
-                  agama: (user as Guru).agama,
-                  guru_password: (user as Guru).guru_password,
-                  guru_email: (user as Guru).guru_email,
-                  verifikasi_kode: (user as Guru).verifikasi_kode,
-                  role: (user as Guru).role);
-            } else {
-              user = Siswa(
-                  nis: (user as Siswa).nis,
-                  siswaPassword: (user as Siswa).siswaPassword,
-                  nama: (user as Siswa).nama,
-                  tmpt_lahir: (user as Siswa).tmpt_lahir,
-                  tgl_lahir: (user as Siswa).tgl_lahir,
-                  alamat: alamat,
-                  phone: phone,
-                  role: (user as Siswa).role);
-            }
+            if (_currentUser is Guru) {
+              (_currentUser.user as Guru).alamat = alamat;
+              (_currentUser.user as Guru).phone = phone;
+            } else if (_currentUser is Siswa) {
+              (_currentUser.user as Siswa).alamat = alamat;
+              (_currentUser.user as Siswa).phone = phone;
+            } else {}
           });
         } else {
           Fluttertoast.showToast(msg: "Gagal memperbarui profil.");
@@ -238,11 +217,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    (user is Guru)
-                                        ? user.alamat
-                                        : (user is Siswa)
-                                            ? user.alamat
-                                            : '',
+                                    _alamat,
                                     style:
                                         Theme.of(context).textTheme.labelLarge,
                                   ),
@@ -268,11 +243,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    (user is Guru)
-                                        ? user.phone
-                                        : (user is Siswa)
-                                            ? user.phone
-                                            : '',
+                                    _phone,
                                     style:
                                         Theme.of(context).textTheme.labelLarge,
                                   ),
