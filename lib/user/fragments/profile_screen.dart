@@ -37,21 +37,19 @@ class _ProfileScreen extends State<ProfileScreen> {
   }
 
   Future<void> _updateUserProfile(String alamat, String phone) async {
-    User? user = _currentUser.user;
-
     try {
       var res = await http.post(
         Uri.parse(API.updateProfile),
         body: {
-          "nis": (user is Guru)
-              ? user.nip
-              : (user is Siswa)
-                  ? user.nis
+          "nis": (_currentUser.user is Guru)
+              ? (_currentUser.user as Guru).nip
+              : (_currentUser.user is Siswa)
+                  ? (_currentUser.user as Siswa).nis
                   : '',
-          "role": (user is Guru)
-              ? user.role
-              : (user is Siswa)
-                  ? user.role
+          "role": (_currentUser.user is Guru)
+              ? (_currentUser.user as Guru).role
+              : (_currentUser.user is Siswa)
+                  ? (_currentUser.user as Siswa).role
                   : '',
           "alamat": alamat,
           "phone": phone,
@@ -63,13 +61,45 @@ class _ProfileScreen extends State<ProfileScreen> {
         if (resBodyOfEdit['success'] == true) {
           Fluttertoast.showToast(msg: "Profil berhasil diperbarui.");
           setState(() {
-            if (_currentUser is Guru) {
+            if (_currentUser.user is Guru) {
               (_currentUser.user as Guru).alamat = alamat;
               (_currentUser.user as Guru).phone = phone;
-            } else if (_currentUser is Siswa) {
+            } else if (_currentUser.user is Siswa) {
               (_currentUser.user as Siswa).alamat = alamat;
               (_currentUser.user as Siswa).phone = phone;
             } else {}
+
+          User updatedUser;
+
+          if (_currentUser.user is Guru) {
+              updatedUser = Guru(
+                  nip: (_currentUser.user as Guru).nip,
+                  nik: (_currentUser.user as Guru).nik,
+                  nuptk: (_currentUser.user as Guru).nuptk,
+                  nama: (_currentUser.user as Guru).nama,
+                  jkel: (_currentUser.user as Guru).jkel,
+                  alamat: alamat,
+                  tmpt_lahir: (_currentUser.user as Guru).tmpt_lahir,
+                  tgl_lahir: (_currentUser.user as Guru).tgl_lahir,
+                  guru_status: (_currentUser.user as Guru).guru_status,
+                  phone: phone,
+                  agama: (_currentUser.user as Guru).agama,
+                  guru_password: (_currentUser.user as Guru).guru_password,
+                  guru_email: (_currentUser.user as Guru).guru_email,
+                  verifikasi_kode: (_currentUser.user as Guru).verifikasi_kode,
+                  role: (_currentUser.user as Guru).role);
+            } else {
+              updatedUser = Siswa(
+                  nis: (_currentUser.user as Siswa).nis,
+                  siswaPassword: (_currentUser.user as Siswa).siswaPassword,
+                  nama: (_currentUser.user as Siswa).nama,
+                  tmpt_lahir: (_currentUser.user as Siswa).tmpt_lahir,
+                  tgl_lahir: (_currentUser.user as Siswa).tgl_lahir,
+                  alamat: alamat,
+                  phone: phone,
+                  role: (_currentUser.user as Siswa).role);
+            }
+            _currentUser.updateUserInfo(updatedUser);
           });
         } else {
           Fluttertoast.showToast(msg: "Gagal memperbarui profil.");
@@ -217,7 +247,11 @@ class _ProfileScreen extends State<ProfileScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    _alamat,
+                                    (_currentUser.user is Guru)
+                                ? (_currentUser.user as Guru).alamat
+                                : (_currentUser.user is Siswa)
+                                    ? (_currentUser.user as Siswa).alamat
+                                    : '',
                                     style:
                                         Theme.of(context).textTheme.labelLarge,
                                   ),
@@ -243,7 +277,11 @@ class _ProfileScreen extends State<ProfileScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    _phone,
+                                    (_currentUser.user is Guru)
+                                ? (_currentUser.user as Guru).phone
+                                : (_currentUser.user is Siswa)
+                                    ? (_currentUser.user as Siswa).phone
+                                    : '',
                                     style:
                                         Theme.of(context).textTheme.labelLarge,
                                   ),

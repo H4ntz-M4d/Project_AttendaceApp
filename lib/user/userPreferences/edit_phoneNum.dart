@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:project_attendance_app/user/model/guru.dart';
 import 'package:project_attendance_app/user/model/profil_item.dart';
-import 'package:flutter/material.dart';
 import 'package:project_attendance_app/user/model/siswa.dart';
 import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 
@@ -17,8 +17,20 @@ class EditPhone extends StatefulWidget {
 }
 
 class _EditPhoneState extends State<EditPhone> {
-  final _phoneController = TextEditingController();
+  late TextEditingController _phoneController;
   final CurrentUser _currentUser = Get.put(CurrentUser());
+
+  @override
+  void initState() {
+    super.initState();
+    String initialPhone = '';
+    if (_currentUser.user is Guru) {
+      initialPhone = (_currentUser.user as Guru).phone;
+    } else if (_currentUser.user is Siswa) {
+      initialPhone = (_currentUser.user as Siswa).phone;
+    }
+    _phoneController = TextEditingController(text: initialPhone);
+  }
 
   @override
   void dispose() {
@@ -30,10 +42,10 @@ class _EditPhoneState extends State<EditPhone> {
     final newPhone = _phoneController.text;
 
     // Panggil callback untuk mengirim nilai nama dan nomor telepon
-    if (_currentUser is Guru) {
+    if (_currentUser.user is Guru) {
       widget.editProfile(ProfilItem(
           alamat: (_currentUser.user as Guru).alamat, noHp: newPhone));
-    } else if (_currentUser is Siswa) {
+    } else if (_currentUser.user is Siswa) {
       widget.editProfile(ProfilItem(
           alamat: (_currentUser.user as Siswa).alamat, noHp: newPhone));
     } else {}
