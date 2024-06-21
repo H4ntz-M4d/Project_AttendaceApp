@@ -11,10 +11,11 @@ class API {
   static const resetPassword = "$hostConnect/user/reset_password.php";
   static const sendEmailCode = "$hostConnect/user/email_code.php";
   static const changeEmail = "$hostConnect/user/change_email.php";
-  static const getRecord = "$hostConnect/user/get_record.php";
+  static const getRecordAbsen = "$hostConnect/user/get_record_absen.php";
   static const getTop5Record = "$hostConnect/user/get_top_five_records.php";
   static const getCountTotalRecords =
       "$hostConnect/user/count_total_records.php";
   static const getCountMonthRecords =
       "$hostConnect/user/count_month_records.php";
+  static const getMonthRecords = "$hostConnect/user/records_every_month.php";
 }

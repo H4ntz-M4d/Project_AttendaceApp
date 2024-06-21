@@ -6,8 +6,10 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
+import 'package:project_attendance_app/user/model/guru.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
-import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
+import 'package:project_attendance_app/user/model/siswa.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:project_attendance_app/user/model/event_list.dart';
 import 'package:http/http.dart' as http;
@@ -24,21 +26,34 @@ class _DetailAbsenState extends State<DetailAbsen> {
   List<RecordAbsen> _selectedEvents = [];
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
-  final CurrentSiswa _currentUser = Get.put(CurrentSiswa());
+  final CurrentUser _currentUser = Get.put(CurrentUser());
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
     _currentUser.getUserInfo().then((_) {
-      _fetchEvents();
+      _fetchEventsForYear(_selectedDay.year);
     });
   }
 
-  Future<void> _fetchEvents() async {
-    final String nis = _currentUser.user.nis;
-    final response =
-        await http.post(Uri.parse(API.getRecord), body: {'nis': nis});
+  Future<void> _fetchEventsForYear(int year) async {
+    String id = '';
+    String role = '';
+
+    if (_currentUser.user is Guru) {
+      id = (_currentUser.user as Guru).nip;
+      role = (_currentUser.user as Guru).role;
+    } else if (_currentUser.user is Siswa) {
+      id = (_currentUser.user as Siswa).nis;
+      role = (_currentUser.user as Siswa).role;
+    }
+
+    final response = await http.post(Uri.parse(API.getRecordAbsen), body: {
+      'nis': id,
+      'role': role,
+      'year': year.toString(), // Include the year in the request
+    });
     print("Response status: ${response.statusCode}");
     print("Response body: ${response.body}");
     if (response.statusCode == 200) {
@@ -68,6 +83,54 @@ class _DetailAbsenState extends State<DetailAbsen> {
     }
   }
 
+  Future<void> _fetchEventsForMonth(int year, int month) async {
+    String id = '';
+    String role = '';
+
+    if (_currentUser.user is Guru) {
+      id = (_currentUser.user as Guru).nip;
+      role = (_currentUser.user as Guru).role;
+    } else if (_currentUser.user is Siswa) {
+      id = (_currentUser.user as Siswa).nis;
+      role = (_currentUser.user as Siswa).role;
+    }
+    try {
+      final response = await http.post(Uri.parse(API.getMonthRecords), body: {
+        "nis": id,
+        "year": year.toString(),
+        "month": month.toString().padLeft(2, '0'),
+        "role": role
+      });
+        print("Response status: ${response.statusCode}");
+        print("Response body: ${response.body}");
+    if (response.statusCode == 200) {
+      try {
+        final data = json.decode(response.body);
+        if (data['success']) {
+          setState(() {
+            event.clear();
+            for (var eventJson in data['events']) {
+              RecordAbsen recordAbsen = RecordAbsen.fromJson(eventJson);
+              DateTime eventDate =
+                  DateTime.parse(eventJson['kalender_absensi']);
+              DateTime dateWithoutTime =
+                  DateTime(eventDate.year, eventDate.month, eventDate.day);
+
+              if (event[dateWithoutTime] == null) {
+                event[dateWithoutTime] = [];
+              }
+              event[dateWithoutTime]?.add(recordAbsen);
+            }
+            _selectedEvents = _getEventsForDay(_selectedDay);
+          });
+        }
+      } catch (e) {
+        print("Error parsing JSON: $e");
+      }
+    }
+    } catch (e) {}
+  }
+
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
@@ -87,11 +150,10 @@ class _DetailAbsenState extends State<DetailAbsen> {
   Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
     if (events.isEmpty) return const SizedBox();
 
-    // Display a single marker for dates with events
     return Container(
       alignment: Alignment.bottomCenter,
       decoration: BoxDecoration(
-        color: Colors.blueGrey, // Choose a default color for the marker
+        color: Colors.blueGrey,
         shape: BoxShape.circle,
       ),
       width: 8.0,
@@ -100,17 +162,24 @@ class _DetailAbsenState extends State<DetailAbsen> {
     );
   }
 
+  void _onPageChanged(DateTime focusedDay) {
+    setState(() {
+      _focusedDay = focusedDay;
+    });
+    _fetchEventsForMonth(focusedDay.year, focusedDay.month);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "Detail Absen ",
+          "Detail Absen",
           style: GoogleFonts.lato(
             textStyle: const TextStyle(
               fontWeight: FontWeight.w700,
-              fontSize: 30,
+              fontSize: 25,
               color: Color.fromARGB(255, 247, 238, 221),
             ),
           ),
@@ -121,7 +190,7 @@ class _DetailAbsenState extends State<DetailAbsen> {
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               backgroundColor: Colors.white,
               minimumSize: const Size(60, 60),
               shape: const RoundedRectangleBorder(
@@ -137,17 +206,15 @@ class _DetailAbsenState extends State<DetailAbsen> {
             ),
           ),
         ],
-        backgroundColor: const Color.fromARGB(255, 0, 141, 218),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
-      backgroundColor: const Color.fromARGB(255, 0, 141, 218),
+      backgroundColor: Theme.of(context).colorScheme.primary,
       body: Center(
         child: Column(
           children: [
-            // Calendar Control
             const SizedBox(height: 10),
             Container(
-              width: MediaQuery.of(context).size.width *
-                  0.8, // 80% of the screen width
+              width: MediaQuery.of(context).size.width * 0.8,
               height: 400,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -166,11 +233,7 @@ class _DetailAbsenState extends State<DetailAbsen> {
                 lastDay: DateTime(_focusedDay.year + 10),
                 selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
                 onDaySelected: _onDaySelected,
-                onPageChanged: (focusedDay) {
-                  setState(() {
-                    _focusedDay = focusedDay;
-                  });
-                },
+                onPageChanged: _onPageChanged,
                 eventLoader: _getEventsForDay,
                 calendarStyle: CalendarStyle(
                   outsideDaysVisible: false,
@@ -196,7 +259,9 @@ class _DetailAbsenState extends State<DetailAbsen> {
                   formatButtonVisible: false,
                   titleTextStyle: GoogleFonts.lato(
                     textStyle: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 25),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 25,
+                    ),
                   ),
                 ),
                 calendarBuilders: CalendarBuilders(
@@ -207,8 +272,6 @@ class _DetailAbsenState extends State<DetailAbsen> {
               ),
             ),
             const SizedBox(height: 20.0),
-
-            // Event Control
             Expanded(
               child: EventsList(events: _selectedEvents),
             ),
