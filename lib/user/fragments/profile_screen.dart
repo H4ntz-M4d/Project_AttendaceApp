@@ -1,11 +1,12 @@
 import 'dart:convert';
-
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/user/model/siswa.dart';
-import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
+import 'package:project_attendance_app/user/model/guru.dart';
+import 'package:project_attendance_app/user/model/user.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:project_attendance_app/user/userPreferences/edit_Photo.dart';
 import 'package:project_attendance_app/user/userPreferences/edit_alamat.dart';
 import 'package:project_attendance_app/user/model/profil_item.dart';
@@ -24,24 +25,34 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreen extends State<ProfileScreen> {
-  final CurrentSiswa _currentUser = Get.put(CurrentSiswa());
+  final CurrentUser _currentUser = Get.put(CurrentUser());
 
-  String _alamat = ''; // Tambahkan variabel name
-  String _phone = ''; // Tambahkan variabel phone
+  String _alamat = '';
+  String _phone = '';
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _currentUser.syncUserInfo();
   }
 
   Future<void> _updateUserProfile(String alamat, String phone) async {
+    User? user = _currentUser.user;
+
     try {
       var res = await http.post(
         Uri.parse(API.updateProfile),
         body: {
-          "nis": _currentUser.user.nis,
+          "nis": (user is Guru)
+              ? user.nip
+              : (user is Siswa)
+                  ? user.nis
+                  : '',
+          "role": (user is Guru)
+              ? user.role
+              : (user is Siswa)
+                  ? user.role
+                  : '',
           "alamat": alamat,
           "phone": phone,
         },
@@ -52,23 +63,35 @@ class _ProfileScreen extends State<ProfileScreen> {
         if (resBodyOfEdit['success'] == true) {
           Fluttertoast.showToast(msg: "Profil berhasil diperbarui.");
           setState(() {
-            _currentUser.user.alamat = alamat;
-            _currentUser.user.phone = phone;
+            if (user is Guru) {
+              user = Guru(
+                  nip: (user as Guru).nip,
+                  nik: (user as Guru).nik,
+                  nuptk: (user as Guru).nuptk,
+                  nama: (user as Guru).nama,
+                  jkel: (user as Guru).jkel,
+                  alamat: alamat,
+                  tmpt_lahir: (user as Guru).tmpt_lahir,
+                  tgl_lahir: (user as Guru).tgl_lahir,
+                  guru_status: (user as Guru).guru_status,
+                  phone: phone,
+                  agama: (user as Guru).agama,
+                  guru_password: (user as Guru).guru_password,
+                  guru_email: (user as Guru).guru_email,
+                  verifikasi_kode: (user as Guru).verifikasi_kode,
+                  role: (user as Guru).role);
+            } else {
+              user = Siswa(
+                  nis: (user as Siswa).nis,
+                  siswaPassword: (user as Siswa).siswaPassword,
+                  nama: (user as Siswa).nama,
+                  tmpt_lahir: (user as Siswa).tmpt_lahir,
+                  tgl_lahir: (user as Siswa).tgl_lahir,
+                  alamat: alamat,
+                  phone: phone,
+                  role: (user as Siswa).role);
+            }
           });
-
-          // Update data lokal
-          Siswa updatedUser = Siswa(
-            nis: _currentUser.user.nis,
-            siswaPassword: _currentUser.user.siswaPassword,
-            nama: _currentUser.user.nama,
-            tmpt_lahir: _currentUser.user.tmpt_lahir,
-            tgl_lahir: _currentUser.user.tgl_lahir,
-            alamat: alamat,
-            phone: phone,
-            role: _currentUser.user.role,
-          );
-
-          _currentUser.updateUserInfo(updatedUser);
         } else {
           Fluttertoast.showToast(msg: "Gagal memperbarui profil.");
         }
@@ -140,92 +163,128 @@ class _ProfileScreen extends State<ProfileScreen> {
                   const SizedBox(
                     height: 35,
                   ),
-                  Column(children: [
-                    InputDecorator(
-                      decoration: const InputDecoration(
-                          icon: Icon(Icons.assignment_ind),
-                          labelText: 'NIP',
-                          contentPadding: EdgeInsets.symmetric(vertical: 10)),
-                      child: Text(
-                        _currentUser.user.nis,
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 28,
-                    ),
-                    InputDecorator(
-                      decoration: const InputDecoration(
-                          icon: Icon(Icons.person),
-                          labelText: 'Nama',
-                          contentPadding: EdgeInsets.symmetric(vertical: 10)),
-                      child: Text(
-                        _currentUser.user.nama,
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 28,
-                    ),
-                    InputDecorator(
-                      decoration: const InputDecoration(
-                          icon: Icon(Icons.assignment_ind),
-                          labelText: 'Tempat/Tanggal Lahir',
-                          contentPadding: EdgeInsets.symmetric(vertical: 10)),
-                      child: Text(
-                        '${_currentUser.user.tmpt_lahir}, ${_currentUser.user.tgl_lahir}',
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 28,
-                    ),
-                    InkWell(
-                      onTap: _openEditAlamat,
-                      splashColor: Colors.blueGrey,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                            icon: Icon(Icons.location_on_outlined),
-                            labelText: 'Alamat',
-                            contentPadding: EdgeInsets.symmetric(vertical: 10)),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _currentUser.user.alamat,
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                            ),
-                            const Icon(Icons.edit)
-                          ],
+                  Obx(() {
+                    if (_currentUser.user == null) {
+                      return CircularProgressIndicator();
+                    }
+
+                    final user = _currentUser.user;
+                    return Column(
+                      children: [
+                        InputDecorator(
+                          decoration: InputDecoration(
+                              icon: Icon(Icons.assignment_ind),
+                              labelText: (user is Guru) ? 'NIP' : 'NIS',
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 10)),
+                          child: Text(
+                            (user is Guru)
+                                ? user.nip
+                                : (user is Siswa)
+                                    ? user.nis
+                                    : '',
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 28,
-                    ),
-                    InkWell(
-                      onTap: _openEditPhone,
-                      splashColor: Colors.blueGrey,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                            icon: Icon(Icons.phone),
-                            labelText: 'No. Handphone',
-                            contentPadding: EdgeInsets.symmetric(vertical: 10)),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _currentUser.user.phone,
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                            ),
-                            const Icon(Icons.edit)
-                          ],
+                        const SizedBox(
+                          height: 28,
                         ),
-                      ),
-                    )
-                  ])
+                        InputDecorator(
+                          decoration: const InputDecoration(
+                              icon: Icon(Icons.person),
+                              labelText: 'Nama',
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 10)),
+                          child: Text(
+                            (user is Guru)
+                                ? user.nama
+                                : (user is Siswa)
+                                    ? user.nama
+                                    : '',
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 28,
+                        ),
+                        InputDecorator(
+                          decoration: const InputDecoration(
+                              icon: Icon(Icons.assignment_ind),
+                              labelText: 'Tempat/Tanggal Lahir',
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 10)),
+                          child: Text(
+                            (user is Guru)
+                                ? '${user.tmpt_lahir}, ${user.tgl_lahir}'
+                                : (user is Siswa)
+                                    ? '${user.tmpt_lahir}, ${user.tgl_lahir}'
+                                    : '',
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 28,
+                        ),
+                        InkWell(
+                          onTap: _openEditAlamat,
+                          splashColor: Colors.blueGrey,
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                                icon: Icon(Icons.location_on_outlined),
+                                labelText: 'Alamat',
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 10)),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    (user is Guru)
+                                        ? user.alamat
+                                        : (user is Siswa)
+                                            ? user.alamat
+                                            : '',
+                                    style:
+                                        Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                ),
+                                const Icon(Icons.edit)
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 28,
+                        ),
+                        InkWell(
+                          onTap: _openEditPhone,
+                          splashColor: Colors.blueGrey,
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                                icon: Icon(Icons.phone),
+                                labelText: 'No. Handphone',
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 10)),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    (user is Guru)
+                                        ? user.phone
+                                        : (user is Siswa)
+                                            ? user.phone
+                                            : '',
+                                    style:
+                                        Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                ),
+                                const Icon(Icons.edit)
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    );
+                  })
                 ],
               ),
             ),

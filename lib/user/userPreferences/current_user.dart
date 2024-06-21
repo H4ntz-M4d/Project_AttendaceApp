@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 class CurrentUser extends GetxController {
   Rx<User?> _currentUser = Rx<User?>(null);
 
-  User get user => _currentUser.value!;
+  User? get user => _currentUser.value;
 
   @override
   void onInit() {
@@ -22,11 +22,7 @@ class CurrentUser extends GetxController {
     User? getUserInfoFromLocalStorage = await RememberUserPrefs.readUserInfo();
 
     if (getUserInfoFromLocalStorage != null) {
-      if (getUserInfoFromLocalStorage is Guru) {
-        _currentUser.value = Guru.fromJson(getUserInfoFromLocalStorage.toJson());
-      } else if (getUserInfoFromLocalStorage is Siswa) {
-        _currentUser.value = Siswa.fromJson(getUserInfoFromLocalStorage.toJson());
-      }
+      _currentUser.value = User.fromJson(getUserInfoFromLocalStorage.toJson());
     } else {
       print("No user info found in local storage");
     }
@@ -38,24 +34,26 @@ class CurrentUser extends GetxController {
   }
 
   Future<void> syncUserInfo() async {
-    try {
-      String id = '';
-      if (_currentUser.value is Guru) {
-        id = (_currentUser.value as Guru).nip;
-      } else if (_currentUser.value is Siswa) {
-        id = (_currentUser.value as Siswa).nis;
-      }
+    String id = '';
+    String role = '';
 
-      var res = await http.get(Uri.parse('${API.getData}?id=$id'));
+    if (_currentUser.value is Guru) {
+      id = (_currentUser.value as Guru).nip;
+      role = (_currentUser.value as Guru).role;
+    } else if (_currentUser.value is Siswa) {
+      id = (_currentUser.value as Siswa).nis;
+      role = (_currentUser.value as Siswa).role;
+    }
+
+    try {
+      var res = await http
+          .post(Uri.parse(API.getData), body: {"nis": id, "role": role});
       if (res.statusCode == 200) {
         var resBody = jsonDecode(res.body);
+        print(resBody);
         if (resBody['success'] == true) {
           User updatedUser;
-          if (resBody['userData']['role'] == 'guru') {
-            updatedUser = Guru.fromJson(resBody['userData']);
-          } else {
-            updatedUser = Siswa.fromJson(resBody['userData']);
-          }
+          updatedUser = User.fromJson(resBody['userData']);
           updateUserInfo(updatedUser);
         }
       }
