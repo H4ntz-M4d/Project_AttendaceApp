@@ -1,5 +1,5 @@
 class API {
-  static const hostConnect = "http://192.168.1.45/api_attendance_app";
+  static const hostConnect = "http://10.42.0.187/api_attendance_app";
 
   static const hostConnectUser = "$hostConnect/user";
 

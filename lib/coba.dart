@@ -109,6 +109,7 @@ class DrawerNavigation extends StatelessWidget {
               Navigator.pop(context);
               Future.delayed(const Duration(milliseconds: 500), () {
                 Get.to(() => const LoginPage());
+                RememberUserPrefs.clearUserInfo();
               });
               // Add your logic here to navigate to Help page
             },

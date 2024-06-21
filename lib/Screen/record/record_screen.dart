@@ -17,7 +17,7 @@ import 'package:project_attendance_app/user/model/guru.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
 import 'package:project_attendance_app/user/model/siswa.dart';
 import 'package:project_attendance_app/user/model/user.dart';
-import 'package:project_attendance_app/user/service/guru_service.dart';
+import 'package:project_attendance_app/user/service/user_service.dart';
 import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
 import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
@@ -144,37 +144,8 @@ class _UserPageState extends State<UserPage> {
       RememberUserPrefs.readUserInfo(),
     ]);
 
-    print(results);
-
-    Object user = results[0] ??
-        // Siswa(
-        //     nis: '',
-        //     siswaPassword: '',
-        //     nama: '',
-        //     tmpt_lahir: '',
-        //     tgl_lahir: '',
-        //     alamat: '',
-        //     phone: '',
-        //     role: '');
-        Guru(
-          nip: '',
-          nik: '',
-          nuptk: '',
-          nama: '',
-          jkel: '',
-          alamat: '',
-          tmpt_lahir: '',
-          tgl_lahir: '',
-          guru_status: '',
-          phone: '',
-          agama: '',
-          guru_password: '',
-          guru_email: '',
-          verifikasi_kode: '',
-          role: '',
-        );
     return {
-      'user': user,
+      'user': results[0],
     };
   }
 

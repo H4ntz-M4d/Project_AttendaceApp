@@ -1,49 +1,61 @@
-import "dart:convert";
-import "package:get/get.dart";
-import "package:project_attendance_app/api_connection/api_connection.dart";
-import "package:project_attendance_app/user/model/siswa.dart";
-import "package:project_attendance_app/user/userPreferences/siswa_preference.dart";
-import "package:project_attendance_app/user/userPreferences/user_preferences.dart";
+import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:project_attendance_app/api_connection/api_connection.dart';
+import 'package:project_attendance_app/user/model/guru.dart';
+import 'package:project_attendance_app/user/model/siswa.dart';
+import 'package:project_attendance_app/user/model/user.dart';
+import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class CurrentUser extends GetxController {
-  Rx<Siswa> _currentUser = Siswa(
-          nis: '',
-          siswaPassword: '',
-          nama: '',
-          tmpt_lahir: '',
-          tgl_lahir: '',
-          alamat: '',
-          phone: '',
-          role: '')
-      .obs;
+  Rx<User?> _currentUser = Rx<User?>(null);
 
-  Siswa get user => _currentUser.value;
+  User? get user => _currentUser.value;
 
-  getUserInfo() async {
-    Siswa? getUserInfoFromLocalStorage =
-        await RememberSiswaPrefs.readSiswaInfo();
+  @override
+  void onInit() {
+    super.onInit();
+    getUserInfo();
+  }
+
+  Future<void> getUserInfo() async {
+    User? getUserInfoFromLocalStorage = await RememberUserPrefs.readUserInfo();
+
     if (getUserInfoFromLocalStorage != null) {
-      _currentUser.value = getUserInfoFromLocalStorage;
+      _currentUser.value = User.fromJson(getUserInfoFromLocalStorage.toJson());
     } else {
-      // Handle the case when getUserInfoFromLocalStorage is null
-      // For example, you could set a default value or display an error message
+      print("No user info found in local storage");
     }
   }
 
-  updateUserInfo(Siswa updatedUser) async {
+  Future<void> updateUserInfo(User updatedUser) async {
     _currentUser.value = updatedUser;
-    await RememberSiswaPrefs.storeSiswaInfo(updatedUser);
+    await RememberUserPrefs.storeUserInfo(updatedUser);
   }
 
   Future<void> syncUserInfo() async {
+    String id = '';
+    String role = '';
+
+    if (_currentUser.value is Guru) {
+      id = (_currentUser.value as Guru).nip;
+      role = (_currentUser.value as Guru).role;
+    } else if (_currentUser.value is Siswa) {
+      id = (_currentUser.value as Siswa).nis;
+      role = (_currentUser.value as Siswa).role;
+    } else {
+      
+    }
+
     try {
       var res = await http
-          .get(Uri.parse('${API.getData}?nis=${_currentUser.value.nis}'));
+          .post(Uri.parse(API.getData), body: {"nis": id, "role": role});
       if (res.statusCode == 200) {
         var resBody = jsonDecode(res.body);
+        print(resBody);
         if (resBody['success'] == true) {
-          Siswa updatedUser = Siswa.fromJson(resBody['userData']);
+          User updatedUser;
+          updatedUser = User.fromJson(resBody['userData']);
           updateUserInfo(updatedUser);
         }
       }
