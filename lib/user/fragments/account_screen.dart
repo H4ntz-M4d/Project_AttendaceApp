@@ -17,6 +17,7 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   final CurrentUser _currentUser = Get.put(CurrentUser());
   String nama = '';
+  String email= '';
 
   @override
   void initState() {
@@ -27,8 +28,10 @@ class _AccountScreenState extends State<AccountScreen> {
   void checkUserRole() {
     if (_currentUser.user is Guru) {
       nama = (_currentUser.user as Guru).nama;
+      email = (_currentUser.user as Guru).guru_email;
     } else if (_currentUser.user is Siswa) {
       nama = (_currentUser.user as Siswa).nama;
+      email = (_currentUser.user as Siswa).email;
     } else {}
   }
 
@@ -89,7 +92,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         color: Colors.black, fontSize: 15),
                   ),
                   subtitle: Text(
-                    'muhadiahmad@gmail.com',
+                    email,
                     style: GoogleFonts.plusJakartaSans(
                         color: Color.fromARGB(255, 105, 105, 105),
                         fontSize: 13),

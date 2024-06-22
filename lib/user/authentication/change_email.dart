@@ -6,8 +6,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/user/fragments/account_screen.dart';
-import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
+import 'package:project_attendance_app/user/model/guru.dart';
+import 'package:project_attendance_app/user/model/siswa.dart';
 import 'package:http/http.dart' as http;
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 
 class ChangeEmail extends StatefulWidget {
   const ChangeEmail({super.key});
@@ -17,7 +19,7 @@ class ChangeEmail extends StatefulWidget {
 }
 
 class _ChangeEmail extends State<ChangeEmail> {
-  final CurrentSiswa _currentUser = Get.put(CurrentSiswa());
+  final CurrentUser _currentUser = Get.put(CurrentUser());
   final List<TextEditingController> _kode =
       List.generate(4, (index) => TextEditingController());
   final TextEditingController oldEmailController = TextEditingController();
@@ -32,11 +34,19 @@ class _ChangeEmail extends State<ChangeEmail> {
       _isLoading = true;
     });
 
-    final String nis = _currentUser.user.nis;
     final response = await http.post(
       Uri.parse(API.sendEmailCode),
       body: {
-        'nis': nis,
+        "nis": (_currentUser.user is Guru)
+              ? (_currentUser.user as Guru).nip
+              : (_currentUser.user is Siswa)
+                  ? (_currentUser.user as Siswa).nis
+                  : '',
+        "role": (_currentUser.user is Guru)
+              ? (_currentUser.user as Guru).role
+              : (_currentUser.user is Siswa)
+                  ? (_currentUser.user as Siswa).role
+                  : '',
         'email_lama': oldEmailController.text.trim(),
       },
     );
@@ -107,13 +117,21 @@ class _ChangeEmail extends State<ChangeEmail> {
   Future<void> changeEmail() async {
     _showLoadingDialog(context);
 
-    final String nis = _currentUser.user.nis;
     final verificationcode =
         _kode.map((controller) => controller.text).join('');
     final response = await http.post(
       Uri.parse(API.changeEmail),
       body: {
-        'nis': nis,
+        "nis": (_currentUser.user is Guru)
+              ? (_currentUser.user as Guru).nip
+              : (_currentUser.user is Siswa)
+                  ? (_currentUser.user as Siswa).nis
+                  : '',
+        "role": (_currentUser.user is Guru)
+              ? (_currentUser.user as Guru).role
+              : (_currentUser.user is Siswa)
+                  ? (_currentUser.user as Siswa).role
+                  : '',
         'verifikasi_kode': verificationcode,
         'email_baru': newEmailController.text
       },
