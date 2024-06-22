@@ -11,7 +11,6 @@ import 'package:project_attendance_app/bloc/theme_bloc/app_colors.dart';
 import 'package:project_attendance_app/bloc/theme_bloc/theme_bloc.dart';
 import 'package:project_attendance_app/coba.dart';
 import 'package:project_attendance_app/user/authentication/login_layout.dart';
-import 'package:project_attendance_app/user/fragments/detail_absen.dart';
 import 'package:project_attendance_app/user/fragments/profile_screen.dart';
 import 'package:project_attendance_app/user/model/guru.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';

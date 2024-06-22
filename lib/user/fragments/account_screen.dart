@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_attendance_app/user/authentication/change_email.dart';
 import 'package:project_attendance_app/user/authentication/forgot_password.dart';
-import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
+import 'package:project_attendance_app/user/model/guru.dart';
+import 'package:project_attendance_app/user/model/siswa.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -14,7 +15,22 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  final CurrentSiswa _currentUser = Get.put(CurrentSiswa());
+  final CurrentUser _currentUser = Get.put(CurrentUser());
+  String nama = '';
+
+  @override
+  void initState() {
+    super.initState();
+    checkUserRole();
+  }
+
+  void checkUserRole() {
+    if (_currentUser.user is Guru) {
+      nama = (_currentUser.user as Guru).nama;
+    } else if (_currentUser.user is Siswa) {
+      nama = (_currentUser.user as Siswa).nama;
+    } else {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +71,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       color: Colors.black, fontSize: 15),
                 ),
                 subtitle: Text(
-                  _currentUser.user.nama,
+                  nama,
                   style: GoogleFonts.plusJakartaSans(
                       color: Color.fromARGB(255, 105, 105, 105), fontSize: 13),
                 ),

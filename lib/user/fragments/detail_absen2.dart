@@ -1,8 +1,18 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:project_attendance_app/api_connection/api_connection.dart';
+import 'package:project_attendance_app/user/model/event_list.dart';
+import 'package:project_attendance_app/user/model/guru.dart';
+import 'package:project_attendance_app/user/model/record_absen.dart';
+import 'package:project_attendance_app/user/model/siswa.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:http/http.dart' as http;
 
 import 'utils.dart';
 
@@ -12,7 +22,7 @@ class TableEventsExample extends StatefulWidget {
 }
 
 class _TableEventsExampleState extends State<TableEventsExample> {
-  late final ValueNotifier<List<Event>> _selectedEvents;
+  late final ValueNotifier<List<RecordAbsen>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -20,8 +30,8 @@ class _TableEventsExampleState extends State<TableEventsExample> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
-
-  
+  final CurrentUser _currentUser = Get.put(CurrentUser());
+  Map<DateTime, List<RecordAbsen>> event = {};
 
   @override
   void initState() {
@@ -37,12 +47,13 @@ class _TableEventsExampleState extends State<TableEventsExample> {
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
+  List<RecordAbsen> _getEventsForDay(DateTime day) {
     // Implementation example
-    return kEvents[day] ?? [];
+    DateTime dateWithoutTime = DateTime(day.year, day.month, day.day);
+    return event[dateWithoutTime] ?? [];
   }
 
-  List<Event> _getEventsForRange(DateTime start, DateTime end) {
+  List<RecordAbsen> _getEventsForRange(DateTime start, DateTime end) {
     // Implementation example
     final days = daysInRange(start, end);
 
@@ -84,6 +95,61 @@ class _TableEventsExampleState extends State<TableEventsExample> {
     }
   }
 
+  Future<void> _fetchEventsForMonth(int year, int month) async {
+    String id = '';
+    String role = '';
+
+    if (_currentUser.user is Guru) {
+      id = (_currentUser.user as Guru).nip;
+      role = (_currentUser.user as Guru).role;
+    } else if (_currentUser.user is Siswa) {
+      id = (_currentUser.user as Siswa).nis;
+      role = (_currentUser.user as Siswa).role;
+    }
+    try {
+      final response = await http.post(Uri.parse(API.getMonthRecords), body: {
+        "nis": id,
+        "year": year.toString(),
+        "month": month.toString().padLeft(2, '0'),
+        "role": role
+      });
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
+      if (response.statusCode == 200) {
+        try {
+          final data = json.decode(response.body);
+          if (data['success']) {
+            setState(() {
+              event.clear();
+              for (var eventJson in data['events']) {
+                RecordAbsen recordAbsen = RecordAbsen.fromJson(eventJson);
+                DateTime eventDate =
+                    DateTime.parse(eventJson['kalender_absensi']);
+                DateTime dateWithoutTime =
+                    DateTime(eventDate.year, eventDate.month, eventDate.day);
+
+                if (event[dateWithoutTime] == null) {
+                  event[dateWithoutTime] = [];
+                }
+                event[dateWithoutTime]?.add(recordAbsen);
+              }
+              _selectedEvents.value = _getEventsForDay(_selectedDay!);
+            });
+          }
+        } catch (e) {
+          print("Error parsing JSON: $e");
+        }
+      }
+    } catch (e) {}
+  }
+
+  void _onPageChanged(DateTime focusedDay) {
+    setState(() {
+      _focusedDay = focusedDay;
+    });
+    _fetchEventsForMonth(focusedDay.year, focusedDay.month);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +158,7 @@ class _TableEventsExampleState extends State<TableEventsExample> {
       ),
       body: Column(
         children: [
-          TableCalendar<Event>(
+          TableCalendar<RecordAbsen>(
             firstDay: kFirstDay,
             lastDay: kLastDay,
             focusedDay: _focusedDay,
@@ -116,34 +182,14 @@ class _TableEventsExampleState extends State<TableEventsExample> {
                 });
               }
             },
-            onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
-            },
+            onPageChanged: _onPageChanged,
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<Event>>(
+            child: ValueListenableBuilder<List<RecordAbsen>>(
               valueListenable: _selectedEvents,
               builder: (context, value, _) {
-                return ListView.builder(
-                  itemCount: value.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 4.0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: ListTile(
-                        onTap: () => print('${value[index]}'),
-                        title: Text('${value[index]}'),
-                      ),
-                    );
-                  },
-                );
+                return EventsList(events: value);
               },
             ),
           ),
