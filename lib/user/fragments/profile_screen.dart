@@ -93,6 +93,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                   nis: (_currentUser.user as Siswa).nis,
                   siswaPassword: (_currentUser.user as Siswa).siswaPassword,
                   nama: (_currentUser.user as Siswa).nama,
+                  email: (_currentUser.user as Siswa).email,
                   tmpt_lahir: (_currentUser.user as Siswa).tmpt_lahir,
                   tgl_lahir: (_currentUser.user as Siswa).tgl_lahir,
                   alamat: alamat,

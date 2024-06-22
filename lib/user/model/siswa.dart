@@ -6,6 +6,7 @@ class Siswa implements User {
   String nis;
   String siswaPassword;
   String nama;
+  String email;
   String tmpt_lahir;
   String tgl_lahir;
   String alamat;
@@ -17,6 +18,7 @@ class Siswa implements User {
       nis: json['nis'] ?? '',
       siswaPassword: json['siswa_password'] ?? '',
       nama: json['nama'] ?? '',
+      email: json['siswa_email'] ?? '',
       tmpt_lahir: json['tmpt_lahir'] ?? '', // Provide default value if null
       tgl_lahir: json['tgl_lahir'] ?? '',
       alamat: json['alamat'] ?? '',
@@ -29,6 +31,7 @@ class Siswa implements User {
       {required this.nis,
       required this.siswaPassword,
       required this.nama,
+      required this.email,
       required this.tmpt_lahir,
       required this.tgl_lahir,
       required this.alamat,
@@ -39,6 +42,7 @@ class Siswa implements User {
         'nis': nis,
         'siswa_password': siswaPassword,
         'nama': nama,
+        'siswa_email': email,
         'tmpt_lahir': tmpt_lahir,
         'tgl_lahir': tgl_lahir,
         'alamat': alamat,

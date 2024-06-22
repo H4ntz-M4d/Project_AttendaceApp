@@ -17,7 +17,7 @@ import 'package:project_attendance_app/user/model/record_absen.dart';
 import 'package:project_attendance_app/user/model/siswa.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/user/service/user_service.dart';
-import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
 import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
@@ -136,7 +136,7 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  final CurrentSiswa _rememberCurrentSiswa = Get.put(CurrentSiswa());
+  final CurrentUser _currentUser = Get.put(CurrentUser());
 
   Future<Map<String, dynamic>> getUser() async {
     final results = await Future.wait([
@@ -161,9 +161,9 @@ class _UserPageState extends State<UserPage> {
         .scrollable();
 
     return GetBuilder(
-        init: CurrentSiswa(),
-        initState: (CurrentSiswa) {
-          _rememberCurrentSiswa.getUserInfo();
+        init: CurrentUser(),
+        initState: (CurrentUser) {
+          _currentUser.getUserInfo();
         },
         builder: (controller) {
           return FutureBuilder<Map<String, dynamic>>(
