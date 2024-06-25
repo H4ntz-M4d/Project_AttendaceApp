@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
 import 'package:project_attendance_app/api_connection/api_connection.dart';
 import 'package:project_attendance_app/bloc/record_bloc/record_bloc.dart';
@@ -484,43 +485,51 @@ class Settings extends StatelessWidget {
           List<RecordAbsen>? histories = snapshot.data;
           if (histories != null && histories.isNotEmpty) {
             List<SettingsItemModel> setItem = histories.map((history) {
-              switch (history.kd_ket) {
-                case 'HD':
-                  return SettingsItemModel(
-                    icon: Icons.co_present,
-                    color: const Color(0xff8D7AEE),
-                    title: 'Hadir',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-                case 'SK':
-                  return SettingsItemModel(
-                    icon: Icons.sick,
-                    color: const Color(0xffF468B7),
-                    title: 'Sakit',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-                case 'ZN':
-                  return SettingsItemModel(
-                    icon: Icons.receipt,
-                    color: const Color(0xffFEC85C),
-                    title: 'Izin',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-                case 'PH':
-                  return SettingsItemModel(
-                    icon: Icons.close,
-                    color: const Color(0xff5FD0D3),
-                    title: 'Alpha',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-                default:
-                  return SettingsItemModel(
-                    icon: Icons.co_present,
-                    color: const Color(0xff8D7AEE),
-                    title: 'Hadir',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-              }
+            final dateTimeFormat = DateFormat('dd-MM-yyyy HH:mm');
+                  final [date, time] =
+                      dateTimeFormat.format(history.record).split(' ');
+                  switch (history.namaKeterangan) {
+                    case 'Hadir':
+                      return SettingsItemModel(
+                        icon: Icons.co_present,
+                        color: const Color(0xff8D7AEE),
+                        title: 'Hadir',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                    case 'Sakit':
+                      return SettingsItemModel(
+                        icon: Icons.sick,
+                        color: const Color(0xffF468B7),
+                        title: 'Sakit',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                    case 'Izin':
+                      return SettingsItemModel(
+                        icon: Icons.receipt,
+                        color: const Color(0xffFEC85C),
+                        title: 'Izin',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                    case 'Alpha':
+                      return SettingsItemModel(
+                        icon: Icons.close,
+                        color: const Color(0xff5FD0D3),
+                        title: 'Alpha',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                    default:
+                      return SettingsItemModel(
+                        icon: Icons.co_present,
+                        color: const Color(0xff8D7AEE),
+                        title: 'Hadir',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                  }
             }).toList();
 
             return Column(
