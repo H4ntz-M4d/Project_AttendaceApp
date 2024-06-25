@@ -58,7 +58,7 @@ class DrawerNavigation extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.auto_graph_outlined),
+            leading: Icon(Icons.details),
             title: Text('Detail Absensi'),
             onTap: () {
               Navigator.pop(context);

@@ -38,7 +38,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           Uri.parse(API.resetPassword),
           body: {
             'nis': widget.nis,
-            'siswa_password': newPasswordController.text.trim(),
+            'password': newPasswordController.text.trim(),
           },
         );
         final responseData = json.decode(response.body);

@@ -43,9 +43,7 @@ class CurrentUser extends GetxController {
     } else if (_currentUser.value is Siswa) {
       id = (_currentUser.value as Siswa).nis;
       role = (_currentUser.value as Siswa).role;
-    } else {
-      
-    }
+    } else {}
 
     try {
       var res = await http

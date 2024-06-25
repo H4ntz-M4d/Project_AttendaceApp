@@ -4,27 +4,21 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_attendance_app/Screen/record/record_detail_page.dart';
-import 'package:project_attendance_app/api_connection/api_connection.dart';
+import 'package:intl/intl.dart';
 import 'package:project_attendance_app/bloc/record_bloc/record_bloc.dart';
 import 'package:project_attendance_app/bloc/theme_bloc/app_colors.dart';
 import 'package:project_attendance_app/bloc/theme_bloc/theme_bloc.dart';
 import 'package:project_attendance_app/coba.dart';
-import 'package:project_attendance_app/user/authentication/login_layout.dart';
 import 'package:project_attendance_app/user/fragments/profile_screen.dart';
 import 'package:project_attendance_app/user/model/guru.dart';
 import 'package:project_attendance_app/user/model/record_absen.dart';
 import 'package:project_attendance_app/user/model/siswa.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/user/service/user_service.dart';
-import 'package:project_attendance_app/user/userPreferences/current_siswa.dart';
-import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
-import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
+import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sidebarx/sidebarx.dart';
 import 'package:styled_widget/styled_widget.dart';
-import 'package:http/http.dart' as http;
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -34,7 +28,6 @@ class RecordPage extends StatefulWidget {
 }
 
 class _RecordPageState extends State<RecordPage> {
-  final _controller = SidebarXController(selectedIndex: 0, extended: true);
   final _key = GlobalKey<ScaffoldState>();
   Future<bool> _onWillPop(BuildContext context) async {
     return await showDialog(
@@ -93,40 +86,12 @@ class _RecordPageState extends State<RecordPage> {
                 : null,
             drawer: DrawerNavigation(),
             body: UserPage(),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                // Dispatch the ToggleThemeEvent when the button is pressed
-                context.read<ThemeBloc>().add(ToggleThemeEvent());
-              },
-              child: Icon(Icons.brightness_medium),
-              backgroundColor: Theme.of(context).primaryColor, // Use theme here
-            ),
           );
         },
       ),
     );
   }
 }
-
-// Scaffold(
-//   appBar: AppBar(
-//     leading: Padding(
-//       padding: EdgeInsets.only(left: 20.0),
-//       child: IconButton(
-//         onPressed: () {},
-//         icon: SvgPicture.asset(
-//           'images/burger.svg',
-//         ),
-//       ),
-//     ),
-//     backgroundColor: Color(0xff3977ff),
-//     title: Text(
-//       "Home",
-//       style: TextStyle(color: Colors.white),
-//     ),
-//   ),
-//   body: SafeArea(child: UserPage()),
-// );
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -136,7 +101,7 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  final CurrentSiswa _rememberCurrentSiswa = Get.put(CurrentSiswa());
+  final CurrentUser _currentUser = Get.put(CurrentUser());
 
   Future<Map<String, dynamic>> getUser() async {
     final results = await Future.wait([
@@ -161,9 +126,9 @@ class _UserPageState extends State<UserPage> {
         .scrollable();
 
     return GetBuilder(
-        init: CurrentSiswa(),
-        initState: (CurrentSiswa) {
-          _rememberCurrentSiswa.getUserInfo();
+        init: CurrentUser(),
+        initState: (CurrentUser) {
+          _currentUser.getUserInfo();
         },
         builder: (controller) {
           return FutureBuilder<Map<String, dynamic>>(
@@ -359,16 +324,16 @@ class ActionsRow extends StatelessWidget {
       onTap: () {
         switch (name) {
           case "Hadir":
-            onActionSelected('HD');
+            onActionSelected('Hadir');
             break;
           case "Sakit":
-            onActionSelected('SK');
+            onActionSelected('Sakit');
             break;
           case "Izin":
-            onActionSelected('ZN');
+            onActionSelected('Izin');
             break;
           case "Alpha":
-            onActionSelected('PH');
+            onActionSelected('Alpha');
             break;
         }
       },
@@ -397,15 +362,15 @@ class ActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => <Widget>[
         Text(
-          'Hanya tampilkan: ',
+          '5 Absensi Terbaru: ',
           style: Theme.of(context).textTheme.titleSmall,
-        ).padding(vertical: 15, left: 20),
-        [
-          _buildActionItem('Hadir', Icons.co_present, context),
-          _buildActionItem('Sakit', Icons.sick, context),
-          _buildActionItem('Izin', Icons.receipt, context),
-          _buildActionItem('Alpha', Icons.close, context),
-        ].toRow(mainAxisAlignment: MainAxisAlignment.spaceAround),
+        ).padding(top: 15, left: 20),
+        // [
+        //   _buildActionItem('Hadir', Icons.co_present, context),
+        //   _buildActionItem('Sakit', Icons.sick, context),
+        //   _buildActionItem('Izin', Icons.receipt, context),
+        //   _buildActionItem('Alpha', Icons.close, context),
+        // ].toRow(mainAxisAlignment: MainAxisAlignment.spaceAround),
       ].toColumn(crossAxisAlignment: CrossAxisAlignment.start);
 }
 
@@ -465,45 +430,56 @@ class Settings extends StatelessWidget {
         } else {
           List<RecordAbsen>? histories = snapshot.data;
           if (histories != null && histories.isNotEmpty) {
-            List<SettingsItemModel> setItem = histories.map((history) {
-              switch (history.kd_ket) {
-                case 'HD':
-                  return SettingsItemModel(
-                    icon: Icons.co_present,
-                    color: const Color(0xff8D7AEE),
-                    title: 'Hadir',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-                case 'SK':
-                  return SettingsItemModel(
-                    icon: Icons.sick,
-                    color: const Color(0xffF468B7),
-                    title: 'Sakit',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-                case 'ZN':
-                  return SettingsItemModel(
-                    icon: Icons.receipt,
-                    color: const Color(0xffFEC85C),
-                    title: 'Izin',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-                case 'PH':
-                  return SettingsItemModel(
-                    icon: Icons.close,
-                    color: const Color(0xff5FD0D3),
-                    title: 'Alpha',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-                default:
-                  return SettingsItemModel(
-                    icon: Icons.co_present,
-                    color: const Color(0xff8D7AEE),
-                    title: 'Hadir',
-                    description: 'Tanggal: ' + history.record.toString(),
-                  );
-              }
-            }).toList();
+            List<SettingsItemModel> setItem = histories
+                .map((history) {
+                  final dateTimeFormat = DateFormat('dd-MM-yyyy HH:mm');
+                  final [date, time] =
+                      dateTimeFormat.format(history.record).split(' ');
+                  switch (history.namaKeterangan) {
+                    case 'Hadir':
+                      return SettingsItemModel(
+                        icon: Icons.co_present,
+                        color: const Color(0xff8D7AEE),
+                        title: 'Hadir',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                    case 'Sakit':
+                      return SettingsItemModel(
+                        icon: Icons.sick,
+                        color: const Color(0xffF468B7),
+                        title: 'Sakit',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                    case 'Izin':
+                      return SettingsItemModel(
+                        icon: Icons.receipt,
+                        color: const Color(0xffFEC85C),
+                        title: 'Izin',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                    case 'Alpha':
+                      return SettingsItemModel(
+                        icon: Icons.close,
+                        color: const Color(0xff5FD0D3),
+                        title: 'Alpha',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                    default:
+                      return SettingsItemModel(
+                        icon: Icons.co_present,
+                        color: const Color(0xff8D7AEE),
+                        title: 'Hadir',
+                        description:
+                            'Tanggal: ${date.toString()}, Jam: ${time.toString()}',
+                      );
+                  }
+                })
+                .cast<SettingsItemModel>()
+                .toList();
 
             return Column(
               children: setItem

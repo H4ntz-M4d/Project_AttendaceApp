@@ -69,9 +69,9 @@ class _ProfileScreen extends State<ProfileScreen> {
               (_currentUser.user as Siswa).phone = phone;
             } else {}
 
-          User updatedUser;
+            User updatedUser;
 
-          if (_currentUser.user is Guru) {
+            if (_currentUser.user is Guru) {
               updatedUser = Guru(
                   nip: (_currentUser.user as Guru).nip,
                   nik: (_currentUser.user as Guru).nik,
@@ -97,6 +97,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                   tgl_lahir: (_currentUser.user as Siswa).tgl_lahir,
                   alamat: alamat,
                   phone: phone,
+                  siswa_email: (_currentUser.user as Siswa).siswa_email,
                   role: (_currentUser.user as Siswa).role);
             }
             _currentUser.updateUserInfo(updatedUser);
@@ -248,10 +249,11 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 Expanded(
                                   child: Text(
                                     (_currentUser.user is Guru)
-                                ? (_currentUser.user as Guru).alamat
-                                : (_currentUser.user is Siswa)
-                                    ? (_currentUser.user as Siswa).alamat
-                                    : '',
+                                        ? (_currentUser.user as Guru).alamat
+                                        : (_currentUser.user is Siswa)
+                                            ? (_currentUser.user as Siswa)
+                                                .alamat
+                                            : '',
                                     style:
                                         Theme.of(context).textTheme.labelLarge,
                                   ),
@@ -278,10 +280,10 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 Expanded(
                                   child: Text(
                                     (_currentUser.user is Guru)
-                                ? (_currentUser.user as Guru).phone
-                                : (_currentUser.user is Siswa)
-                                    ? (_currentUser.user as Siswa).phone
-                                    : '',
+                                        ? (_currentUser.user as Guru).phone
+                                        : (_currentUser.user is Siswa)
+                                            ? (_currentUser.user as Siswa).phone
+                                            : '',
                                     style:
                                         Theme.of(context).textTheme.labelLarge,
                                   ),

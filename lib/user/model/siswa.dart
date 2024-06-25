@@ -10,6 +10,7 @@ class Siswa implements User {
   String tgl_lahir;
   String alamat;
   String phone;
+  String siswa_email;
   String role;
 
   factory Siswa.fromJson(Map<String, dynamic> json) {
@@ -21,6 +22,7 @@ class Siswa implements User {
       tgl_lahir: json['tgl_lahir'] ?? '',
       alamat: json['alamat'] ?? '',
       phone: json['phone'] ?? '',
+      siswa_email: json['siswa_email'] ?? '',
       role: json['role'] ?? '',
     );
   }
@@ -33,6 +35,7 @@ class Siswa implements User {
       required this.tgl_lahir,
       required this.alamat,
       required this.phone,
+      required this.siswa_email,
       required this.role});
 
   Map<String, dynamic> toJson() => {
@@ -43,6 +46,7 @@ class Siswa implements User {
         'tgl_lahir': tgl_lahir,
         'alamat': alamat,
         'phone': phone,
+        'siswa_email': siswa_email,
         'role': role,
       };
 }
