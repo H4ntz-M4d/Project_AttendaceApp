@@ -87,7 +87,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     canvasColor: Colors.black,
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xff3977ff),
-      foregroundColor: Colors.black,
+      foregroundColor: Colors.white,
     ),
     colorScheme: const ColorScheme.dark(
       primary: Color(0xff3977ff),
@@ -115,17 +115,17 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
         letterSpacing: 2,
       ),
       headlineMedium: TextStyle(
-        color: Colors.black,
+        color: Colors.white,
         fontSize: 24,
       ),
-      headlineSmall: TextStyle(color: Colors.black),
+      headlineSmall: TextStyle(color: Colors.white),
       titleLarge: TextStyle(
-        color: Colors.black,
+        color: Colors.white,
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
       titleMedium: TextStyle(
-        color: Colors.black,
+        color: Colors.white,
         fontSize: 18,
       ),
       titleSmall: TextStyle(
@@ -138,7 +138,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
         fontSize: 16,
       ),
       labelMedium: TextStyle(
-        color: Color.fromARGB(200, 0, 0, 0),
+        color: Colors.white,
         fontSize: 12,
       ),
       labelSmall: TextStyle(

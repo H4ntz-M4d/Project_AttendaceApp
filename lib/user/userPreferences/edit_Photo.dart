@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:project_attendance_app/user/model/profil_item.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
 class BuildEditImage extends StatefulWidget{
   const BuildEditImage({super.key});
@@ -15,15 +16,35 @@ class BuildEditImage extends StatefulWidget{
 class _BuilEditImageState extends State<BuildEditImage>{
   Uint8List? _image;
 
-  void getImage() async{
-      Uint8List? img = await pickImage(ImageSource.gallery);
-      if (img != null) {
-        setState(() {
-          _image = img;
-        });
-      } else {
-        print("No image selected");
-      }
+  @override
+  void initState() {
+    super.initState();
+    _loadImage();
+  }
+
+  void _loadImage() async {
+    Uint8List? savedImage = await RememberUserPrefs.loadProfileImage();
+    if (savedImage != null) {
+      setState(() {
+        _image = savedImage;
+      });
+    }
+  }
+
+  void _saveImage(Uint8List image) async {
+    await RememberUserPrefs.storeProfileImage(image);
+  }
+
+  void getImage() async {
+    Uint8List? img = await pickImage(ImageSource.gallery);
+    if (img != null) {
+      setState(() {
+        _image = img;
+      });
+      _saveImage(img);
+    } else {
+      print("No image selected");
+    }
   }
 
   @override
