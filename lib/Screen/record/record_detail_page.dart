@@ -10,7 +10,6 @@ import 'package:project_attendance_app/coba.dart';
 import 'package:project_attendance_app/user/model/siswa.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/user/service/user_service.dart';
-import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:http/http.dart' as http;

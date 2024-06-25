@@ -1,5 +1,5 @@
 class API {
-  static const hostConnect = "http://192.168.252.54/api_attandence_app";
+  static const hostConnect = "http://192.168.1.28/api_attandence_app";
 
   static const hostConnectUser = "$hostConnect/user";
 
@@ -18,4 +18,5 @@ class API {
   static const getCountMonthRecords =
       "$hostConnect/user/count_month_records.php";
   static const getMonthRecords = "$hostConnect/user/records_every_month.php";
+  static const uploadImage = "$hostConnect/user/upload_image.php";
 }

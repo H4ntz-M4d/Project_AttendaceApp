@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,7 +15,6 @@ import 'package:http/http.dart' as http;
 import 'package:project_attendance_app/user/model/siswa.dart';
 import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
-import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -64,6 +64,13 @@ class _LoginPage extends State<LoginPage> {
           } else if (resBodyOfLogin["userData"]["role"] == "siswa") {
             User userInfo = Siswa.fromJson(resBodyOfLogin["userData"]);
             await RememberUserPrefs.storeUserInfo(userInfo);
+
+            // Menyimpan gambar profil
+          String? base64Image = resBodyOfLogin["userData"]["profile_image"];
+            if (base64Image != null && base64Image.isNotEmpty) {
+              Uint8List imageBytes = base64Decode(base64Image);
+              await RememberUserPrefs.storeProfileImage(imageBytes);
+            }
           }
 
           Get.offAll(() => const RecordPage());

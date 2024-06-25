@@ -23,6 +23,7 @@ class _AccountScreenState extends State<AccountScreen> {
   void initState() {
     super.initState();
     checkUserRole();
+    _currentUser.syncUserInfo();
   }
 
   void checkUserRole() {
@@ -87,7 +88,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 splashColor: Colors.white30,
                 child: ListTile(
                   title: Text(
-                    'Email',
+                    email,
                     style: GoogleFonts.plusJakartaSans(
                         color: Colors.black, fontSize: 15),
                   ),

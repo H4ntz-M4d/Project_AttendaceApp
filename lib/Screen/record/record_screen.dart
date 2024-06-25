@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +20,6 @@ import 'package:project_attendance_app/user/model/user.dart';
 import 'package:project_attendance_app/user/service/user_service.dart';
 import 'package:project_attendance_app/user/userPreferences/current_user.dart';
 import 'package:project_attendance_app/user/userPreferences/record_preferences.dart';
-import 'package:project_attendance_app/user/userPreferences/siswa_preference.dart';
 import 'package:project_attendance_app/user/userPreferences/user_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sidebarx/sidebarx.dart';
@@ -225,11 +225,24 @@ class UserCard extends StatefulWidget {
 
 class _UserCardState extends State<UserCard> {
   late Future<List<String>> data;
+  Uint8List? _image;
+
 
   @override
   void initState() {
     super.initState();
     data = UserService.getCountRecordsInfo(widget.user);
+    _loadImage();
+  }
+
+  
+  void _loadImage() async {
+    Uint8List? savedImage = await RememberUserPrefs.loadProfileImage();
+    if (savedImage != null) {
+      setState(() {
+        _image = savedImage;
+      });
+    }
   }
 
   Widget _buildUserRow(User user) {
@@ -253,10 +266,15 @@ class _UserCardState extends State<UserCard> {
           onTap: () {
             Get.to(() => const ProfileScreen());
           },
-          child: const CircleAvatar(
-            radius: 25,
-            backgroundImage: AssetImage('images/art.png'),
-          ).padding(top: 5, right: 10),
+          child: _image != null ?
+            CircleAvatar(
+              radius: 25,
+              backgroundImage: MemoryImage(_image!),
+            ).padding(top: 5, right: 10) :
+            const CircleAvatar(
+              radius: 25,
+              backgroundImage: AssetImage('images/art.png'),
+            ).padding(top: 5, right: 10),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
